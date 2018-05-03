@@ -1,5 +1,26 @@
+# Azalea libc
 
-    musl libc
+[Project Azalea](https://github.com/martin-hughes/project_azalea) has reached
+the point where it is starting to need a standard C library to accompany it.
+Rather than recreate the whole thing from scratch it was decided to base the
+new libary on an established one - musl.
+
+Details about musl can be seen below.
+
+In the early phases only small parts of the library will actually be built into
+an object file. Nonetheless, it was decided to keep the entire source tree as
+close as possible to the original, to simplify merging upstream changes in the
+future.
+
+It's quite unlikely that Azalea will ever become interesting enough that the
+musl developers would be interested in merging Azalea-specific work back
+upstream, but maintaining the same folder structure would certainly make it
+easier.
+
+In order to avoid confusion between this project and the musl upstream project,
+this project will try to use the name "Azalea libc" so far as possible.
+
+# musl libc
 
 musl, pronounced like the word "mussel", is an MIT-licensed
 implementation of the standard C library targetting the Linux syscall
