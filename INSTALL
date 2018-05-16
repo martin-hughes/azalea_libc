@@ -1,3 +1,8 @@
+For Azalea libc disregard these instructions. They should continue to work if
+you wish to build musl from this source - although it is recommended to use the
+genuine source from http://www.musl-libc.org/
+
+Instructions for building Azalea libc will follow.
 
 Quick Installation Guide for musl libc
 ======================================

@@ -2,7 +2,6 @@
 #include <poll.h>
 #include <fcntl.h>
 #include <signal.h>
-#include "syscall.h"
 #include "atomic.h"
 #include "libc.h"
 
@@ -21,37 +20,32 @@ weak_alias(dummy1, __init_ssp);
 
 void __init_libc(char **envp, char *pn)
 {
-	size_t i, *auxv, aux[AUX_CNT] = { 0 };
+	// Set a lot of these to be invalid for the time being.
 	__environ = envp;
-	for (i=0; envp[i]; i++);
-	libc.auxv = auxv = (void *)(envp+i+1);
-	for (i=0; auxv[i]; i+=2) if (auxv[i]<AUX_CNT) aux[auxv[i]] = auxv[i+1];
-	__hwcap = aux[AT_HWCAP];
-	__sysinfo = aux[AT_SYSINFO];
-	libc.page_size = aux[AT_PAGESZ];
+	libc.auxv = NULL;
+	__hwcap = 0;
+	__sysinfo = 0;
 
-	if (!pn) pn = (void*)aux[AT_EXECFN];
-	if (!pn) pn = "";
+	// Should really grab this from a system header.
+	libc.page_size = 2 * 1024 * 1024;
+
+	// I guess this should come from argv[0]
+	if (!pn)
+	{
+		pn = "";
+	}
 	__progname = __progname_full = pn;
-	for (i=0; pn[i]; i++) if (pn[i]=='/') __progname = pn+i+1;
+	for (int i=0; pn[i]; i++) if (pn[i]=='/') __progname = pn+i+1;
 
-	__init_tls(aux);
-	__init_ssp((void *)aux[AT_RANDOM]);
+	// This appears to do nothing, but I'll forget about it if I simply delete the whole line.
+	//__init_tls(aux);
 
-	if (aux[AT_UID]==aux[AT_EUID] && aux[AT_GID]==aux[AT_EGID]
-		&& !aux[AT_SECURE]) return;
+	// Not ideal to initialize SSP with nullptr, but it'll do for now.
+	__init_ssp(0);
 
+	// This will do until the kernel is a bit more developed.
 	struct pollfd pfd[3] = { {.fd=0}, {.fd=1}, {.fd=2} };
-	int r =
-#ifdef SYS_poll
-	__syscall(SYS_poll, pfd, 3, 0);
-#else
-	__syscall(SYS_ppoll, pfd, 3, &(struct timespec){0}, 0, _NSIG/8);
-#endif
-	if (r<0) a_crash();
-	for (i=0; i<3; i++) if (pfd[i].revents&POLLNVAL)
-		if (__sys_open("/dev/null", O_RDWR)<0)
-			a_crash();
+
 	libc.secure = 1;
 }
 
@@ -65,11 +59,15 @@ static void libc_start_init(void)
 
 weak_alias(libc_start_init, __libc_start_init);
 
-int __libc_start_main(int (*main)(int,char **,char **), int argc, char **argv)
+int __libc_start_main(int (*main)(int,char **,char **), int argc, char **argv, char **envp)
 {
-	char **envp = argv+argc+1;
+	char *pn = NULL;
+	if (argc && (argv != NULL))
+	{
+		pn = argv[0];
+	}
 
-	__init_libc(envp, argv[0]);
+	__init_libc(envp, pn);
 	__libc_start_init();
 
 	/* Pass control to the application */

@@ -1,0 +1,3 @@
+# The .in files are combined by SED into normal header files, and SED deals
+# really badly with CRLFs
+*.in text eol=lf
