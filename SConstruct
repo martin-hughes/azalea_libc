@@ -4,12 +4,14 @@
 # quickly. Once the project is more mature perhaps I will fall back on the old Makefile.
 
 # Some basic configuration options:
+# The location the compiled library file and headers should be put.
 install_folder = '/home/martin/libc_build'
 
+# Where the Azalea user interface headers are installed to. This is controlled by the value config.libc_location in the
+# Azalea code.
 azalea_header_folder = '/home/martin/azalea_dev'
 
 import os
-
 
 def main_build_script():
   global dependencies
