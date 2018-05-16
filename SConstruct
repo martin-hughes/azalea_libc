@@ -43,7 +43,6 @@ def main_build_script():
 
 def build_default_env():
   global at_header_preproc
-  global syscall_header_preproc
   env = Environment()
   env['CC'] = 'clang'
   env['CXX'] = 'clang++'
@@ -59,7 +58,6 @@ def build_default_env():
   env['ARCOMSTR'] =   "(pre-linking) $TARGET"
   env['LIBS'] = [ ]
   env.Append(BUILDERS = {'AlltypesHeaderBuilder' : at_header_preproc})
-  env.Append(BUILDERS = {'SyscallHeaderBuilder' : syscall_header_preproc})
 
   return env
 
@@ -77,12 +75,6 @@ def syscall_header_action(target, source, env):
 
 at_header_preproc = Builder(
   action = Action('sed -f tools/mkalltypes.sed $SOURCES > $TARGET'),
-  suffix = '.h',
-  src_suffix = '.h.in'
-)
-
-syscall_header_preproc = Builder(
-  action = syscall_header_action,
   suffix = '.h',
   src_suffix = '.h.in'
 )

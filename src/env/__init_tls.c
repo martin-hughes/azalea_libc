@@ -6,7 +6,7 @@
 #include "pthread_impl.h"
 #include "libc.h"
 #include "atomic.h"
-#include "syscall.h"
+
 
 int __init_tp(void *p)
 {
@@ -15,7 +15,8 @@ int __init_tp(void *p)
 	int r = __set_thread_area(TP_ADJ(p));
 	if (r < 0) return -1;
 	if (!r) libc.can_do_threads = 1;
-	td->tid = __syscall(SYS_set_tid_address, &td->tid);
+	/*td->tid = __syscall(SYS_set_tid_address, &td->tid); */
+	td->tid = 0;
 	td->locale = &libc.global_locale;
 	td->robust_list.head = &td->robust_list.head;
 	return 0;
@@ -117,10 +118,13 @@ static void static_init_tls(size_t *aux)
 #ifndef SYS_mmap2
 #define SYS_mmap2 SYS_mmap
 #endif
-		mem = (void *)__syscall(
+		/*mem = (void *)__syscall(
 			SYS_mmap2,
 			0, libc.tls_size, PROT_READ|PROT_WRITE,
-			MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+			MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);*/
+
+		/* For now, we don't support mmap style calls well enough. */
+		a_crash();
 		/* -4095...-1 cast to void * will crash on dereference anyway,
 		 * so don't bloat the init code checking for error codes and
 		 * explicitly calling a_crash(). */
