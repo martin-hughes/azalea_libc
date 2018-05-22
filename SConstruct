@@ -7,9 +7,9 @@
 # The location the compiled library file and headers should be put.
 install_folder = '/home/martin/libc_build'
 
-# Where the Azalea user interface headers are installed to. This is controlled by the value config.libc_location in the
-# Azalea code.
-azalea_header_folder = '/home/martin/azalea_dev'
+# Where the Azalea user interface headers and libraries are installed to. This is controlled by the value
+# config.libc_location in the Azalea code.
+azalea_dev_folder = '/home/martin/azalea_dev'
 
 import os
 
@@ -25,7 +25,7 @@ def main_build_script():
   libc_env.AppendENVPath('CPATH', '#/arch/x86_64')
   libc_env.AppendENVPath('CPATH', '#/arch/generic')
   libc_env.AppendENVPath('CPATH', '#/src/internal')
-  libc_env.AppendENVPath('CPATH', os.path.join(azalea_header_folder, "include"))
+  libc_env.AppendENVPath('CPATH', os.path.join(azalea_dev_folder, "include"))
 
   lib_obj = libc_env.SConscript("#SConscript", 'libc_env', variant_dir='output', duplicate=0)
   libc_env.Install(install_folder, lib_obj)

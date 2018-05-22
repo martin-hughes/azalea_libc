@@ -9,7 +9,7 @@ dependencies = [
 
     "src/errno/__errno_location.c",
 
-    "src/exit/_Exit.cpp",
+    "src/exit/_Exit.c",
     "src/exit/exit.c",
 
     "src/internal/libc.c",
