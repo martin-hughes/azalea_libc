@@ -36,7 +36,7 @@ def main_build_script():
   libc_env.Install(include_folder, headers)
   libc_env.Alias('install', include_folder)
 
-  bits_headers = libc_env.File("output/bits/alltypes.h")
+  bits_headers = [libc_env.File("output/bits/alltypes.h"), libc_env.Glob("arch/x86_64/bits/*.h")]
   bits_folder = os.path.join(include_folder, "bits")
   libc_env.Install(bits_folder, bits_headers)
   libc_env.Alias('install', bits_headers)

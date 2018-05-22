@@ -14,6 +14,7 @@ dependencies = [
 
     "src/internal/libc.c",
 
+    Glob("src/stdlib/*.c"),
     Glob("src/string/*.c"),
 
     "src/thread/x86_64/__set_thread_area.cpp",
