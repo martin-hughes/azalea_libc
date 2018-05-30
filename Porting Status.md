@@ -1,14 +1,52 @@
 # Libc porting status
 
-This file shows which parts of musl have been ported to Azalea, grouped by header file.
+This file contains details of the status of the project to port musl to form Azalea libc. A simple file is used so as
+to avoid a large number of tracking issues - this way, the bug tracker can be used for actual bugs.
 
-## C99 Headers
+## Contents
+
+- [Overview](#overview)
+- [Major deficiencies](#major-deficiencies)
+- [Minor deficiencies](#minor-deficiencies)
+- [Features grouped by header](#features-grouped-by-header)
+  - [C99 header files](#c99-headers)
+  - [Other header files](#other-headers)
+
+## Overview
+
+At present, this project is in very early stages. Most features do not work at all in Azalea - details of those that do
+can be found in the section [Features grouped by header](#features-grouped-by-header).
+
+It is also notable that no significant testing has been carried out.
+
+## Major deficiencies
+
+These deficiencies represent features that are incompletely ported compared to how the library should work if it had
+been fully ported to Azalea.
+
+- There is no support for the "aux" variable.
+- Exit codes are not supported.
+- Thread IDs are always set to zero.
+- There are a whole load of warnings generated.
+- File mode flags are basically unsupported.
+- mmap only maps, it doesn't look at any of the flags or other nice features.
+
+## Minor deficiencies
+
+- Futexes do not support the private flag, nor waking more than one thread at a time. (see __futexwait and __wake)
+- mremap doesn't support moved or shrinking remaps, only expanding ones.
+
+Various other minor deficiencies can be found by searching "Azalea deficiency" in the source tree.
+
+## Features grouped by header
+
+### C99 Headers
 
 Status | File name | Notes
 ---------|-----------|------
 not started | assert.h | Requires files support
 not started | complex.h | Needs floating point support to work first
-not started | ctype.h | Not started, but not expecting any significant work.
+incomplete | ctype.h | Compiles but not tested.
 incomplete | errno.h | Not tested, but should just work
 not started | fenv.h | Needs floating point support to work first
 not started | float.h | Needs floating point support to work first
@@ -25,8 +63,8 @@ not started | stdatomic.h | Not part of the musl library?
 Completed | stdbool.h | No changes from musl version
 incomplete | stddef.h | Not tested, but should just work
 incomplete | stdint.h | No changes made, not expecting any.
-not started | stdio.h | Hopefully not too much work - just swapping Linux syscalls for Azalea ones.
-incomplete | stdlib.h | Ported but not fully tested
+incomplete | stdio.h | A fair amount of work. Requires a method for pushing stdout/in/err to the user program. Malloc/free do now work.
+incomplete | stdlib.h | Ported but not fully tested. Malloc-type functions still to come.
 Completed | stdnoreturn.h | No changes from musl version. Only a single macro.
 incomplete | string.h | Ported but not fully tested
 not started | tgmath.h | Probably not too much work
@@ -36,7 +74,7 @@ not started | uchar.h | Looks like not too much work.
 not started | wchar.h | Could be quite a lot of work.
 not started | wctype.h | Oughtn't be too bad.
 
-## Other Headers
+### Other Headers
 
 No deliberate progress has been made on any of the following headers.
 

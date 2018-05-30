@@ -22,7 +22,7 @@ struct __libc {
 	int threaded;
 	int secure;
 	volatile int threads_minus_1;
-	size_t *auxv;
+	//size_t *auxv;
 	struct tls_module *tls_head;
 	size_t tls_size, tls_align, tls_cnt;
 	size_t page_size;

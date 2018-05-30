@@ -3,10 +3,13 @@
 #include <string.h>
 #include <errno.h>
 
+#include <azalea/syscall.h>
+
 FILE *fopen(const char *restrict filename, const char *restrict mode)
 {
 	FILE *f;
-	int fd;
+	ERR_CODE ec;
+	GEN_HANDLE fd;
 	int flags;
 
 	/* Check for valid initial mode character */
@@ -18,15 +21,28 @@ FILE *fopen(const char *restrict filename, const char *restrict mode)
 	/* Compute the flags to pass to open() */
 	flags = __fmodeflags(mode);
 
-	fd = sys_open(filename, flags, 0666);
-	if (fd < 0) return 0;
+	/* We don't currently support CLOEXEC */
 	if (flags & O_CLOEXEC)
-		__syscall(SYS_fcntl, fd, F_SETFD, FD_CLOEXEC);
+	{
+		return 0;
+	}
+
+	ec = syscall_open_handle(filename, strlen(filename), &fd);
+	if (ec != NO_ERROR)
+	{
+		return 0;
+	}
 
 	f = __fdopen(fd, mode);
-	if (f) return f;
+	if (f)
+	{
+		 return f;
+	}
+	else
+	{
+		syscall_close_handle(fd);
+	}
 
-	__syscall(SYS_close, fd);
 	return 0;
 }
 

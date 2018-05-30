@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include <features.h>
+#include <azalea/kernel_types.h>
 
 #define __NEED_FILE
 #define __NEED___isoc_va_list
@@ -130,7 +131,7 @@ FILE *tmpfile(void);
  || defined(_BSD_SOURCE)
 FILE *fmemopen(void *__restrict, size_t, const char *__restrict);
 FILE *open_memstream(char **, size_t *);
-FILE *fdopen(int, const char *);
+FILE *fdopen(GEN_HANDLE, const char *);
 FILE *popen(const char *, const char *);
 int pclose(FILE *);
 int fileno(FILE *);

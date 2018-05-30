@@ -1,6 +1,6 @@
 To build Azalea libc:
 
-1. Ensure that you have configured the azalea_header_folder variable in
+1. Ensure that you have configured the azalea_dev_folder variable in
    SConstruct to point at the location of the Azalea user interface headers.
 2. Adjust the variable install_folder in SConstruct to a suitable value
 3. In the root of the tree, execute `scons`

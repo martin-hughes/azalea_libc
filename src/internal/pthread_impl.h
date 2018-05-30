@@ -1,6 +1,7 @@
 #ifndef _PTHREAD_IMPL_H
 #define _PTHREAD_IMPL_H
 
+#include <azalea/syscall.h>
 #include <pthread.h>
 #include <signal.h>
 #include <errno.h>
@@ -137,21 +138,15 @@ int __timedwait(volatile int *, int, clockid_t, const struct timespec *, int);
 int __timedwait_cp(volatile int *, int, clockid_t, const struct timespec *, int);
 void __wait(volatile int *, volatile int *, int, int);
 
-/* Come back to this later
+/* Azalea deficiency: priv and cnt are ignored */
 static inline void __wake(volatile void *addr, int cnt, int priv)
 {
-	if (priv) priv = FUTEX_PRIVATE;
-	if (cnt<0) cnt = INT_MAX;
-	__syscall(SYS_futex, addr, FUTEX_WAKE|priv, cnt) != -ENOSYS ||
-	__syscall(SYS_futex, addr, FUTEX_WAKE, cnt);
+	syscall_futex_wake((volatile int *)addr);
 }
 static inline void __futexwait(volatile void *addr, int val, int priv)
 {
-	if (priv) priv = FUTEX_PRIVATE;
-	__syscall(SYS_futex, addr, FUTEX_WAIT|priv, val) != -ENOSYS ||
-	__syscall(SYS_futex, addr, FUTEX_WAIT, val);
+	syscall_futex_wait((volatile int *)addr, val);
 }
-*/
 
 void __acquire_ptc(void);
 void __release_ptc(void);

@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include "libc.h"
 
+#include <azalea/kernel_types.h>
+
 #define UNGET 8
 
 #define FFINALLOCK(f) ((f)->lock>=0 ? __lockfile((f)) : 0)
@@ -72,7 +74,7 @@ off_t __ftello_unlocked(FILE *);
 size_t __fwritex(const unsigned char *, size_t, FILE *);
 int __putc_unlocked(int, FILE *);
 
-FILE *__fdopen(int, const char *);
+FILE *__fdopen(GEN_HANDLE, const char *);
 int __fmodeflags(const char *);
 
 FILE *__ofl_add(FILE *f);

@@ -5,6 +5,8 @@
 #include "atomic.h"
 #include "libc.h"
 
+#include <azalea/system_properties.h>
+
 void __init_tls(size_t *);
 
 static void dummy(void) {}
@@ -22,12 +24,12 @@ void __init_libc(char **envp, char *pn)
 {
 	// Set a lot of these to be invalid for the time being.
 	__environ = envp;
-	libc.auxv = NULL;
+	//libc.auxv = NULL;
 	__hwcap = 0;
 	__sysinfo = 0;
 
 	// Should really grab this from a system header.
-	libc.page_size = 2 * 1024 * 1024;
+	libc.page_size = MEM_PAGE_SIZE;
 
 	// I guess this should come from argv[0]
 	if (!pn)
@@ -38,7 +40,7 @@ void __init_libc(char **envp, char *pn)
 	for (int i=0; pn[i]; i++) if (pn[i]=='/') __progname = pn+i+1;
 
 	// This appears to do nothing, but I'll forget about it if I simply delete the whole line.
-	//__init_tls(aux);
+	__init_tls(NULL);
 
 	// Not ideal to initialize SSP with nullptr, but it'll do for now.
 	__init_ssp(0);

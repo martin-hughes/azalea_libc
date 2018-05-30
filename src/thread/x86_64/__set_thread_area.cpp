@@ -7,7 +7,6 @@
  * compatible header files.
  */
 
-//#include "src/internal/pthread_impl.h"
 #include <errno.h>
 #include <azalea/syscall.h>
 

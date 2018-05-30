@@ -1,5 +1,7 @@
 #include "pthread_impl.h"
 
+#include <azalea/syscall.h>
+
 void __wait(volatile int *addr, volatile int *waiters, int val, int priv)
 {
 	int spins=100;
@@ -10,8 +12,7 @@ void __wait(volatile int *addr, volatile int *waiters, int val, int priv)
 	}
 	if (waiters) a_inc(waiters);
 	while (*addr==val) {
-		__syscall(SYS_futex, addr, FUTEX_WAIT|priv, val, 0) != -ENOSYS
-		|| __syscall(SYS_futex, addr, FUTEX_WAIT, val, 0);
+		syscall_futex_wait(addr, val);
 	}
 	if (waiters) a_dec(waiters);
 }

@@ -7,6 +7,7 @@
 #include "libc.h"
 #include "atomic.h"
 
+#include <azalea/syscall.h>
 
 int __init_tp(void *p)
 {
@@ -83,6 +84,7 @@ static void static_init_tls(size_t *aux)
 	size_t base = 0;
 	void *mem;
 
+	/* Azalea deficiency - we don't provide image details yet.
 	for (p=(void *)aux[AT_PHDR],n=aux[AT_PHNUM]; n; n--,p+=aux[AT_PHENT]) {
 		phdr = (void *)p;
 		if (phdr->p_type == PT_PHDR)
@@ -91,13 +93,14 @@ static void static_init_tls(size_t *aux)
 			base = (size_t)_DYNAMIC - phdr->p_vaddr;
 		if (phdr->p_type == PT_TLS)
 			tls_phdr = phdr;
-	}
+	} */
 
 	if (tls_phdr) {
+		/* Azalea deficiency - this might be useful!
 		main_tls.image = (void *)(base + tls_phdr->p_vaddr);
 		main_tls.len = tls_phdr->p_filesz;
 		main_tls.size = tls_phdr->p_memsz;
-		main_tls.align = tls_phdr->p_align;
+		main_tls.align = tls_phdr->p_align; */
 		libc.tls_cnt = 1;
 		libc.tls_head = &main_tls;
 	}
