@@ -1,6 +1,8 @@
 #include "stdio_impl.h"
 #include <sys/uio.h>
 
+#include <azalea/syscall.h>
+
 size_t __stdio_write(FILE *f, const unsigned char *buf, size_t len)
 {
 	struct iovec iovs[2] = {
@@ -10,9 +12,36 @@ size_t __stdio_write(FILE *f, const unsigned char *buf, size_t len)
 	struct iovec *iov = iovs;
 	size_t rem = iov[0].iov_len + iov[1].iov_len;
 	int iovcnt = 2;
-	ssize_t cnt;
+	ssize_t cnt, cnt_0;
+	ERR_CODE ec;
+
+
 	for (;;) {
-		cnt = syscall(SYS_writev, f->fd, iov, iovcnt);
+
+		cnt = 0;
+
+		for (int i = 0; i < iovcnt; i++)
+		{
+			if (iov[i].iov_base != NULL)
+			{
+				ec = syscall_write_handle(f->fd,
+																	f->seek_pos,
+																	iov[i].iov_len,
+																	iov[i].iov_base,
+																	iov[i].iov_len,
+																	(unsigned long *)&cnt_0);
+
+				if (ec != NO_ERROR)
+				{
+					f->flags |= F_ERR;
+					return cnt;
+				}
+
+				f->seek_pos += cnt_0;
+				cnt += cnt_0;
+			}
+		}
+
 		if (cnt == rem) {
 			f->wend = f->buf + f->buf_size;
 			f->wpos = f->wbase = f->buf;

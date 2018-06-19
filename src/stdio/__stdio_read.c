@@ -1,6 +1,8 @@
 #include "stdio_impl.h"
 #include <sys/uio.h>
 
+#include <azalea/syscall.h>
+
 size_t __stdio_read(FILE *f, unsigned char *buf, size_t len)
 {
 	struct iovec iov[2] = {
@@ -8,10 +10,31 @@ size_t __stdio_read(FILE *f, unsigned char *buf, size_t len)
 		{ .iov_base = f->buf, .iov_len = f->buf_size }
 	};
 	ssize_t cnt;
+	ssize_t cnt_0 = 0;
+	ERR_CODE ec = NO_ERROR;
 
-	cnt = iov[0].iov_len ? syscall(SYS_readv, f->fd, iov, 2)
-		: syscall(SYS_read, f->fd, iov[1].iov_base, iov[1].iov_len);
-	if (cnt <= 0) {
+	/*cnt = iov[0].iov_len ? syscall(SYS_readv, f->fd, iov, 2)
+		: syscall(SYS_read, f->fd, iov[1].iov_base, iov[1].iov_len);*/
+
+	if (iov[0].iov_len)
+	{
+		ec = syscall_read_handle(f->fd, f->seek_pos, len, iov[0].iov_base, iov[0].iov_len, (unsigned long *)&cnt_0);
+		fseek(f, cnt_0, SEEK_CUR);
+	}
+
+	if (ec == NO_ERROR)
+	{
+		ec = syscall_read_handle(f->fd, f->seek_pos, len, iov[1].iov_base, iov[1].iov_len, (unsigned long *)&cnt);
+		fseek(f, cnt, SEEK_CUR);
+		cnt += cnt_0;
+	}
+
+	if (ec != NO_ERROR)
+	{
+		f->flags = F_ERR;
+		cnt = 0;
+	}
+	else if (cnt <= 0) {
 		f->flags |= cnt ? F_ERR : F_EOF;
 		return 0;
 	}
