@@ -22,7 +22,7 @@ size_t __stdio_write(FILE *f, const unsigned char *buf, size_t len)
 
 		for (int i = 0; i < iovcnt; i++)
 		{
-			if (iov[i].iov_base != NULL)
+			if ((iov[i].iov_base != NULL) && (iov[i].iov_len != 0))
 			{
 				ec = syscall_write_handle(f->fd,
 																	f->seek_pos,

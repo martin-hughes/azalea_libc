@@ -63,7 +63,7 @@ not started | stdatomic.h | Not part of the musl library?
 Completed | stdbool.h | No changes from musl version
 incomplete | stddef.h | Not tested, but should just work
 incomplete | stdint.h | No changes made, not expecting any.
-incomplete | stdio.h | A fair amount of work. Requires a method for pushing stdout/in/err to the user program. Malloc/free do now work.
+incomplete | stdio.h | A fair amount of work. Malloc/free do now work. Printf works, using a pretty generic path
 incomplete | stdlib.h | Ported but not fully tested. Malloc-type functions still to come.
 Completed | stdnoreturn.h | No changes from musl version. Only a single macro.
 incomplete | string.h | Ported but not fully tested

@@ -5,6 +5,8 @@
 #include "atomic.h"
 #include "libc.h"
 
+#include "stdio_impl.h"
+
 #include <azalea/system_properties.h>
 
 void __init_tls(size_t *);
@@ -71,6 +73,8 @@ int __libc_start_main(int (*main)(int,char **,char **), int argc, char **argv, c
 
 	__init_libc(envp, pn);
 	__libc_start_init();
+
+	__open_stdout();
 
 	/* Pass control to the application */
 	exit(main(argc, argv, envp));

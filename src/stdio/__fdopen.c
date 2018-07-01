@@ -54,8 +54,8 @@ FILE *__fdopen(GEN_HANDLE fd, const char *mode)
 
 	/* Activate line buffered mode for terminals */
 	/* Also not used yet */
-	/* f->lbf = EOF;
-	if (!(f->flags & F_NOWR) && !__syscall(SYS_ioctl, fd, TIOCGWINSZ, &wsz))
+	f->lbf = EOF;
+	/* if (!(f->flags & F_NOWR) && !__syscall(SYS_ioctl, fd, TIOCGWINSZ, &wsz))
 		f->lbf = '\n';*/
 
 	/* Initialize op ptrs. No problem if some are unneeded. */

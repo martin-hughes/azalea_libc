@@ -1,16 +1,23 @@
+#include <string.h>
+#include <stdio.h>
+
 #include "stdio_impl.h"
 
-static unsigned char buf[BUFSIZ+UNGET];
-static FILE f = {
-	.buf = buf+UNGET,
-	.buf_size = sizeof buf-UNGET,
-	.fd = 1,
-	.flags = F_PERM | F_NORD,
-	.lbf = '\n',
-	.write = __stdout_write,
-	.seek = __stdio_seek,
-	.close = __stdio_close,
-	.lock = -1,
-};
+static FILE f;
 FILE *const stdout = &f;
 FILE *volatile __stdout_used = &f;
+
+void __open_stdout()
+{
+	FILE *stdout_f = fopen("pipes\\terminal\\write", "w");
+	if (stdout_f != NULL)
+	{
+		memcpy(stdout, stdout_f, sizeof(FILE));
+
+		stdout->lbf = '\n';
+	}
+	else
+	{
+		exit(0);
+	}
+}

@@ -97,4 +97,6 @@ void __ofl_unlock(void);
 FILE *__fopen_rb_ca(const char *, FILE *, unsigned char *, size_t);
 int __fclose_ca(FILE *);
 
+void __open_stdout();
+
 #endif
