@@ -9,7 +9,7 @@ FILE *volatile __stdout_used = &f;
 
 void __open_stdout()
 {
-	FILE *stdout_f = fopen("pipes\\terminal\\write", "w");
+	FILE *stdout_f = fopen("proc\\0\\stdout", "w");
 	if (stdout_f != NULL)
 	{
 		memcpy(stdout, stdout_f, sizeof(FILE));
