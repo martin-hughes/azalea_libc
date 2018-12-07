@@ -1,15 +1,24 @@
+#include <string.h>
+#include <stdio.h>
+
 #include "stdio_impl.h"
 
 static unsigned char buf[BUFSIZ+UNGET];
-static FILE f = {
-	.buf = buf+UNGET,
-	.buf_size = sizeof buf-UNGET,
-	.fd = 0,
-	.flags = F_PERM | F_NOWR,
-	.read = __stdio_read,
-	.seek = __stdio_seek,
-	.close = __stdio_close,
-	.lock = -1,
-};
+static FILE f;
 FILE *const stdin = &f;
 FILE *volatile __stdin_used = &f;
+
+void __open_stdin()
+{
+	FILE *stdin_f = fopen("proc\\0\\stdin", "r");
+	if (stdin_f == NULL)
+	{
+		stdin_f = fopen("dev\\null", "r");
+		if (stdin_f == NULL)
+		{
+			exit(-1);
+		}
+	}
+
+	memcpy(stdin, stdin_f, sizeof(FILE));
+}

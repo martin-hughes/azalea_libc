@@ -75,6 +75,8 @@ int __libc_start_main(int (*main)(int,char **,char **), int argc, char **argv, c
 	__libc_start_init();
 
 	__open_stdout();
+	__open_stderr();
+	__open_stdin();
 
 	/* Pass control to the application */
 	exit(main(argc, argv, envp));

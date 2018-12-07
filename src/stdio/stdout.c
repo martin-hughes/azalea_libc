@@ -10,14 +10,16 @@ FILE *volatile __stdout_used = &f;
 void __open_stdout()
 {
 	FILE *stdout_f = fopen("proc\\0\\stdout", "w");
-	if (stdout_f != NULL)
+	if (stdout_f == NULL)
 	{
-		memcpy(stdout, stdout_f, sizeof(FILE));
+		stdout_f = fopen("dev\\null", "w");
+		if (stdout_f == NULL)
+		{
+			exit(-1);
+		}
+	}
 
-		stdout->lbf = '\n';
-	}
-	else
-	{
-		exit(0);
-	}
+	memcpy(stdout, stdout_f, sizeof(FILE));
+
+	stdout->lbf = '\n';
 }
