@@ -3,15 +3,8 @@
 # I've chosen to use this because I'm more familiar with it than regular Makefiles, and I want to be able to move
 # quickly. Once the project is more mature perhaps I will fall back on the old Makefile.
 
-# Some basic configuration options:
-# The location the compiled library file and headers should be put.
-install_folder = '/home/martin/libc_build'
-
-# Where the Azalea user interface headers and libraries are installed to. This is controlled by the value
-# config.libc_location in the Azalea code.
-azalea_dev_folder = '/home/martin/azalea_dev'
-
 import os
+import azalea_config.config as config
 
 def main_build_script():
   global dependencies
@@ -25,14 +18,14 @@ def main_build_script():
   libc_env.AppendENVPath('CPATH', '#/arch/x86_64')
   libc_env.AppendENVPath('CPATH', '#/arch/generic')
   libc_env.AppendENVPath('CPATH', '#/src/internal')
-  libc_env.AppendENVPath('CPATH', os.path.join(azalea_dev_folder, "include"))
+  libc_env.AppendENVPath('CPATH', os.path.join(config.azalea_dev_folder, "include"))
 
   lib_obj = libc_env.SConscript("#SConscript", 'libc_env', variant_dir='output', duplicate=0)
-  libc_env.Install(install_folder, lib_obj)
-  libc_env.Alias('install', install_folder)
+  libc_env.Install(config.install_folder, lib_obj)
+  libc_env.Alias('install', config.install_folder)
 
   headers = libc_env.File(Glob("include/*.h"))
-  include_folder = os.path.join(install_folder, "include")
+  include_folder = os.path.join(config.install_folder, "include")
   libc_env.Install(include_folder, headers)
   libc_env.Alias('install', include_folder)
 
