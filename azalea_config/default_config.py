@@ -1,13 +1,8 @@
 # Azalea Libc default configuration.
 #
-# It is recommended that you do not edit these values in this file. Instead, create a file called "local_config.py" in
-# the project root directory, and add your amended values there. This will help prevent the default config being
-# changed in the git repository.
+# It is recommended that you do not edit these values in this file. Instead, set these values on the command line. They
+# will then be remembered for future builds.
 
-# Some basic configuration options:
-# The location the compiled library file and headers should be put.
-install_folder = '~/libc_build'
-
-# Where the Azalea user interface headers and libraries are installed to. This is controlled by the value
-# config.libc_location in the Azalea code.
-azalea_dev_folder = '~/azalea_dev'
+# Folder that is the root of a filesystem for an Azalea system - imagine that if you were running Linux, it would be a
+# folder you could chroot too. When built, the important system files end up here.
+sys_image_root = '../azalea_sys_image'

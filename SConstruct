@@ -4,12 +4,11 @@
 # quickly. Once the project is more mature perhaps I will fall back on the old Makefile.
 
 import os
-import azalea_config.config as config
 
-def main_build_script():
+def main_build_script(vars):
   global dependencies
   libc_env = build_default_env()
-  libc_env['CXXFLAGS'] = '-mno-red-zone -nostdlib -nostdinc -nodefaultlibs -mcmodel=large -ffreestanding -fno-exceptions -std=gnu++14 -U _LINUX -U __linux__ -D __AZALEA__ -D KL_TRACE_BY_SERIAL_PORT -Wno-bitwise-op-parentheses -Wno-shift-op-parentheses'
+  libc_env['CXXFLAGS'] = '-mno-red-zone -nostdlib -nostdinc -nodefaultlibs -mcmodel=large -ffreestanding -fno-exceptions -std=c++17 -U _LINUX -U __linux__ -D __AZALEA__ -D KL_TRACE_BY_SERIAL_PORT -Wno-bitwise-op-parentheses -Wno-shift-op-parentheses'
   libc_env['CFLAGS'] = '-mno-red-zone -nostdlib -nostdinc -nodefaultlibs -mcmodel=large -ffreestanding -fno-exceptions -U _LINUX -U __linux__ -D __AZALEA__ -D KL_TRACE_BY_SERIAL_PORT -Wno-bitwise-op-parentheses -Wno-shift-op-parentheses'
   libc_env['LINKFLAGS'] = "-T build_support/kernel_stage.ld --start-group"
   libc_env['LINK'] = 'ld -Map output/kernel_map.map'
@@ -18,19 +17,28 @@ def main_build_script():
   libc_env.AppendENVPath('CPATH', '#/arch/x86_64')
   libc_env.AppendENVPath('CPATH', '#/arch/generic')
   libc_env.AppendENVPath('CPATH', '#/src/internal')
-  libc_env.AppendENVPath('CPATH', os.path.join(config.azalea_dev_folder, "include"))
+  libc_env.AppendENVPath('CPATH', os.path.join(vars['sys_image_root'], "apps", "developer", "kernel", "include"))
 
-  lib_obj = libc_env.SConscript("#SConscript", 'libc_env', variant_dir='output', duplicate=0)
-  libc_env.Install(config.install_folder, lib_obj)
-  libc_env.Alias('install', config.install_folder)
+  lib_core_objects = libc_env.SConscript("#SConscript-core", 'libc_env', variant_dir='output', duplicate=0)
+  lib_user_objects = libc_env.SConscript("#SConscript-user", 'libc_env', variant_dir='output', duplicate=0)
+  lib_kernel_objects = libc_env.SConscript("#SConscript-kernel", 'libc_env', variant_dir='output', duplicate=0)
+  lib_all_objects = lib_core_objects + lib_user_objects
+  lib_complete = StaticLibrary("output/azalea_libc/azalea_libc", lib_all_objects)
+  lib_kernel_objects = lib_core_objects + lib_kernel_objects
+  lib_kernel = StaticLibrary("output/azalea_libc/azalea_libc_kernel", lib_kernel_objects)
+  lib_folder = os.path.join(vars['sys_image_root'], "apps", "developer", "libc")
+  lib_obj_folder = os.path.join(lib_folder, "lib")
+  lib_include_folder = os.path.join(lib_folder, "include")
+  libc_env.Install(lib_obj_folder, lib_complete)
+  libc_env.Install(lib_obj_folder, lib_kernel)
+  libc_env.Alias('install', lib_obj_folder)
 
   headers = libc_env.File(Glob("include/*.h"))
-  include_folder = os.path.join(config.install_folder, "include")
-  libc_env.Install(include_folder, headers)
-  libc_env.Alias('install', include_folder)
+  libc_env.Install(lib_include_folder, headers)
+  libc_env.Alias('install', lib_include_folder)
 
-  bits_headers = [libc_env.File("output/bits/alltypes.h"), libc_env.Glob("arch/x86_64/bits/*.h")]
-  bits_folder = os.path.join(include_folder, "bits")
+  bits_headers = [libc_env.File("output/bits/alltypes.h"), libc_env.Glob("arch/x86_64/bits/*.h"), libc_env.File("arch/generic/bits/errno.h")]
+  bits_folder = os.path.join(lib_include_folder, "bits")
   libc_env.Install(bits_folder, bits_headers)
   libc_env.Alias('install', bits_headers)
 
@@ -72,4 +80,20 @@ at_header_preproc = Builder(
   src_suffix = '.h.in'
 )
 
-main_build_script()
+def construct_variables():
+  var = Variables(["azalea_config/default_config.py", "variables.cache" ], ARGUMENTS)
+  var.AddVariables(
+    PathVariable("sys_image_root",
+                 "Root of Azalea system image. Look for include files, libraries and installation locations here.",
+                 None,
+                 PathVariable.PathIsDir))
+
+  e = Environment(variables = var)
+
+  var.Save("variables.cache", e)
+
+  return e
+
+vars = construct_variables()
+
+main_build_script(vars)

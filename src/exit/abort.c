@@ -1,14 +1,12 @@
 #include <stdlib.h>
 #include <signal.h>
-#include "syscall.h"
 #include "pthread_impl.h"
 #include "atomic.h"
+#include "azalea/syscall.h"
 
 _Noreturn void abort(void)
 {
-	raise(SIGABRT);
-	__block_all_sigs(0);
 	a_crash();
-	raise(SIGKILL);
-	_Exit(127);
+	syscall_exit_process();
+	while (1) { syscall_exit_process(); };
 }

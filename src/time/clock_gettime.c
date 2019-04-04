@@ -1,9 +1,13 @@
 #include <time.h>
 #include <errno.h>
 #include <stdint.h>
-#include "syscall.h"
 #include "libc.h"
 #include "atomic.h"
+#include "time_impl.h"
+
+#include <azalea/syscall.h>
+
+long __syscall_ret(unsigned long r);
 
 #ifdef VDSO_CGT_SYM
 
@@ -27,6 +31,9 @@ static void *volatile vdso_func = (void *)cgt_init;
 int __clock_gettime(clockid_t clk, struct timespec *ts)
 {
 	int r;
+	struct time_expanded t;
+	ERR_CODE e;
+	struct tm tm;
 
 #ifdef VDSO_CGT_SYM
 	int (*f)(clockid_t, struct timespec *) =
@@ -43,15 +50,35 @@ int __clock_gettime(clockid_t clk, struct timespec *ts)
 	}
 #endif
 
-	r = __syscall(SYS_clock_gettime, clk, ts);
-	if (r == -ENOSYS) {
-		if (clk == CLOCK_REALTIME) {
-			__syscall(SYS_gettimeofday, ts, 0);
-			ts->tv_nsec = (int)ts->tv_nsec * 1000;
-			return 0;
-		}
-		r = -EINVAL;
+	if (clk != CLOCK_REALTIME)
+	{
+		/* Azalea doesn't currently support any other clock */
+		r = -ENOSYS;
 	}
+	else
+	{
+		e = syscall_get_system_clock(&t);
+		if (e != NO_ERROR)
+		{
+			r = -ENOSYS;
+		}
+		else
+		{
+			/* This is all a bit convoluted, because musl expects a Linux format time, so we convert from our perfectly good
+			 * time specification into the Linux one, for it to probably later be converted back to something similar to the
+			 * kernel format... */
+			ts->tv_nsec = t.nanoseconds;
+			tm.tm_year = t.year;
+			tm.tm_mon = t.month;
+			tm.tm_mday = t.day;
+			tm.tm_hour = t.hours;
+			tm.tm_min = t.minutes;
+			tm.tm_sec = t.seconds;
+			ts->tv_sec = __tm_to_secs(&tm);
+			r = 0;
+		}
+	}
+
 	return __syscall_ret(r);
 }
 

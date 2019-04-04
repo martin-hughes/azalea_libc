@@ -1,0 +1,50 @@
+Import('libc_env')
+
+dependencies = [
+    Glob("src/ctype/*.c"),
+    Glob("src/multibyte/*.c"),
+    Glob("src/stdlib/*.c"),
+    Glob("src/string/*.c"),
+
+    "src/errno/__errno_location.c",
+
+    "src/internal/intscan.c",
+    "src/internal/shgetc.c",
+
+    "src/malloc/posix_memalign.c",
+
+    "src/math/__fpclassify.c",
+    "src/math/__fpclassifyl.c",
+    "src/math/__signbit.c",
+    "src/math/__signbitl.c",
+    "src/math/copysignl.c",
+    "src/math/fabs.c",
+    "src/math/fmodl.c",
+    "src/math/frexpl.c",
+    "src/math/scalbn.c",
+    "src/math/scalbnl.c",
+
+    "src/stdio/__lockfile.c",
+    "src/stdio/__stdio_exit.c",
+    "src/stdio/__toread.c",
+    "src/stdio/__towrite.c",
+    "src/stdio/__uflow.c",
+    "src/stdio/asprintf.c",
+    "src/stdio/fwrite.c",
+    "src/stdio/ofl.c",
+    "src/stdio/snprintf.c",
+    "src/stdio/sprintf.c",
+    "src/stdio/vasprintf.c",
+    "src/stdio/vfprintf.c",
+    "src/stdio/vsnprintf.c",
+  ]
+
+at_header_obj = libc_env.AlltypesHeaderBuilder("bits/alltypes", ["#/arch/x86_64/bits/alltypes", "#/include/alltypes"])
+
+lib_obj = [ ]
+for f in dependencies:
+  lib_obj = lib_obj + [ libc_env.Object(f) ]
+
+libc_env.Depends("*.c", "bits/alltypes.h")
+
+Return ('lib_obj')

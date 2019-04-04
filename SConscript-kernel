@@ -1,0 +1,13 @@
+Import('libc_env')
+
+dependencies = [
+    "src/thread/__lock-kernel.c",
+  ]
+
+lib_obj = [ ]
+for f in dependencies:
+  lib_obj = lib_obj + [ libc_env.Object(f) ]
+
+libc_env.Depends("*.c", "bits/alltypes.h")
+
+Return ('lib_obj')

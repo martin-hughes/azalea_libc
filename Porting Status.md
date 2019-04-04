@@ -29,7 +29,7 @@ been fully ported to Azalea.
 - Thread IDs are always set to zero.
 - There are a whole load of warnings generated.
 - File mode flags are basically unsupported.
-- mmap only maps, it doesn't look at any of the flags or other nice features.
+- mmap only maps, it doesn't look at any of the flags or other nice features. It also can't memory map files!
 
 ## Minor deficiencies
 
@@ -53,8 +53,8 @@ not started | float.h | Needs floating point support to work first
 not started | inttypes.h | Not expecting changes from musl version
 Completed | iso646.h | No changes from musl version
 Completed | limits.h | No changes from musl version
-not started | locale.h | Lots of things, but at first glance doesn't look too system dependent.
-not started | math.h | Requires floating point math, and a careful check not to duplicate anything.
+incomplete | locale.h | Included in the library, but not tested.
+incomplete | math.h | Some functions are included, but not tested
 not started | setjmp.h | Ought not be too bad.
 not started | signal.h | Probably a fair amount of work - we don't do "signals" as such.
 Completed | stdalign.h | No changes from musl version
@@ -69,7 +69,7 @@ Completed | stdnoreturn.h | No changes from musl version. Only a single macro.
 incomplete | string.h | Ported but not fully tested
 not started | tgmath.h | Probably not too much work
 not started | threads.h | Plenty of work, although largely I think it's a case of swapping syscalls - and extending the Azalea calls that are available.
-not started | time.h | Requires quite a lot of work on the kernel
+incomplete | time.h | Most functions work, but sleeping does not, not does setting timers. Other minor omissions too.
 not started | uchar.h | Looks like not too much work.
 not started | wchar.h | Could be quite a lot of work.
 not started | wctype.h | Oughtn't be too bad.

@@ -1,10 +1,9 @@
 To build Azalea libc:
 
-1. Ensure that you have configured the azalea_dev_folder variable in
-   SConstruct to point at the location of the Azalea user interface headers.
-2. Adjust the variable install_folder in SConstruct to a suitable value
-3. In the root of the tree, execute `scons`
-4. To install the updated library, execute `scons install`
+1. In the root of the tree, execute `scons`. If you have not built the library before you will be given errors that
+   will tell you the command line parameters that need to be set. These only need to be set for the first build, they
+   are remembered for future builds.
+2. To install the updated library, execute `scons install`
 
 Prerequisites:
 

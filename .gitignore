@@ -7,5 +7,5 @@ config.mak
 lib/musl-gcc.specs
 /obj/
 output/
-local_config.py
+variables.cache
 *.pyc
