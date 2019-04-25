@@ -11,6 +11,7 @@ FILE *fopen(const char *restrict filename, const char *restrict mode)
 	ERR_CODE ec;
 	GEN_HANDLE fd;
 	int flags;
+	uint32_t kernel_flags = 0;
 
 	/* Check for valid initial mode character */
 	if (!strchr("rwa", *mode)) {
@@ -27,7 +28,12 @@ FILE *fopen(const char *restrict filename, const char *restrict mode)
 		return 0;
 	}
 
-	ec = syscall_open_handle(filename, strlen(filename), &fd);
+	if (strchr(mode, 'w'))
+	{
+		kernel_flags = H_CREATE_IF_NEW;
+	}
+
+	ec = syscall_open_handle(filename, strlen(filename), &fd, kernel_flags);
 	if (ec != NO_ERROR)
 	{
 		return 0;

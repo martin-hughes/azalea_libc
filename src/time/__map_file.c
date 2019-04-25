@@ -27,7 +27,7 @@ const char unsigned *__map_file(const char *pathname, size_t *size)
 	}
 	__syscall(SYS_close, fd);*/
 
-	ec = syscall_open_handle(pathname, strlen(pathname), &map_file_handle);
+	ec = syscall_open_handle(pathname, strlen(pathname), &map_file_handle, 0);
 	if (ec == NO_ERROR)
 	{
 		ec = syscall_get_handle_data_len(map_file_handle, &bytes);
