@@ -5,3 +5,5 @@ int *__errno_location(void)
 {
 	return &__pthread_self()->errno_val;
 }
+
+int errno;

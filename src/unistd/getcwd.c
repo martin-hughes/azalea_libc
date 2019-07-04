@@ -2,7 +2,10 @@
 #include <errno.h>
 #include <limits.h>
 #include <string.h>
-#include "syscall.h"
+
+/* Known defects:
+ * - At present, Azalea doesn't really have a concept of 'working directory' so just return the root.
+ */
 
 char *getcwd(char *buf, size_t size)
 {
@@ -14,12 +17,14 @@ char *getcwd(char *buf, size_t size)
 		errno = EINVAL;
 		return 0;
 	}
-	long ret = syscall(SYS_getcwd, buf, size);
-	if (ret < 0)
-		return 0;
-	if (ret == 0 || buf[0] != '/') {
-		errno = ENOENT;
+
+	if (size < 2)
+	{
+		errno = ERANGE;
 		return 0;
 	}
+
+	memcpy(buf, "\\", 2);
+
 	return buf == tmp ? strdup(buf) : buf;
 }

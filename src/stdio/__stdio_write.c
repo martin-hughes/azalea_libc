@@ -25,7 +25,7 @@ size_t __stdio_write(FILE *f, const unsigned char *buf, size_t len)
 			if ((iov[i].iov_base != NULL) && (iov[i].iov_len != 0))
 			{
 				ec = syscall_write_handle(f->fd,
-																	f->seek_pos,
+																	0,
 																	iov[i].iov_len,
 																	iov[i].iov_base,
 																	iov[i].iov_len,
@@ -37,7 +37,6 @@ size_t __stdio_write(FILE *f, const unsigned char *buf, size_t len)
 					return cnt;
 				}
 
-				f->seek_pos += cnt_0;
 				cnt += cnt_0;
 			}
 		}

@@ -1,7 +1,10 @@
 #include <sys/stat.h>
-#include "syscall.h"
+
+/* Known defects:
+ * - This is plainly a lie.
+ */
 
 mode_t umask(mode_t mode)
 {
-	return syscall(SYS_umask, mode);
+	return 0777;
 }

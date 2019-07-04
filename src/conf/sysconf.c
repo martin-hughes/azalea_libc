@@ -4,8 +4,12 @@
 #include <sys/resource.h>
 #include <signal.h>
 #include <sys/sysinfo.h>
-#include "syscall.h"
 #include "libc.h"
+
+/* Known defects:
+ * - This function hasn't been changed from the musl defaults, so it's basically all lies.
+ * - In addition, the names that called system calls just return a default value instead.
+ */
 
 #define JT(x) (-256|(x))
 #define VER JT(1)
@@ -172,11 +176,13 @@ long sysconf(int name)
 	} else if (values[name] >= -1) {
 		return values[name];
 	} else if (values[name] < -256) {
+		return -1;
+		/*
 		struct rlimit lim;
 		getrlimit(values[name]&16383, &lim);
 		if (lim.rlim_cur == RLIM_INFINITY)
 			return -1;
-		return lim.rlim_cur > LONG_MAX ? LONG_MAX : lim.rlim_cur;
+		return lim.rlim_cur > LONG_MAX ? LONG_MAX : lim.rlim_cur;*/
 	}
 
 	switch ((unsigned char)values[name]) {
@@ -192,14 +198,19 @@ long sysconf(int name)
 		return SEM_VALUE_MAX;
 	case JT_NPROCESSORS_CONF & 255:
 	case JT_NPROCESSORS_ONLN & 255: ;
+		return 0;
+		/*
 		unsigned char set[128] = {1};
 		int i, cnt;
 		__syscall(SYS_sched_getaffinity, 0, sizeof set, set);
 		for (i=cnt=0; i<sizeof set; i++)
 			for (; set[i]; set[i]&=set[i]-1, cnt++);
-		return cnt;
+		return cnt;*/
 	case JT_PHYS_PAGES & 255:
 	case JT_AVPHYS_PAGES & 255: ;
+		return 0;
+
+		/*
 		unsigned long long mem;
 		int __lsysinfo(struct sysinfo *);
 		struct sysinfo si;
@@ -209,7 +220,7 @@ long sysconf(int name)
 		else mem = si.freeram + si.bufferram;
 		mem *= si.mem_unit;
 		mem /= PAGE_SIZE;
-		return (mem > LONG_MAX) ? LONG_MAX : mem;
+		return (mem > LONG_MAX) ? LONG_MAX : mem;*/
 	case JT_ZERO & 255:
 		return 0;
 	}

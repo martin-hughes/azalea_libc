@@ -20,6 +20,18 @@ easier.
 In order to avoid confusion between this project and the musl upstream project,
 this project will try to use the name "Azalea libc" so far as possible.
 
+## Multiple output libraries
+
+Azalea libc actually builds three different libraries:
+- azalea_libc - This is the main C library, containing all supported
+  functionality except for the stuff in azalea_linux_shim. You probably want to
+  use this one for most projects.
+- azalea_libc_kernel - This is a subset of C functions that are suitable for
+  use within the Azalea kernel itself. An example of a restriction is that the
+  library cannot use system calls, for example.
+- azalea_linux_shim - This implements (badly, mostly) some Linux system calls
+  commonly used within the library or common Linux applications.
+
 # musl libc
 
 musl, pronounced like the word "mussel", is an MIT-licensed

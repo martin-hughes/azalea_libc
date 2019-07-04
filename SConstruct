@@ -33,14 +33,38 @@ def main_build_script(vars):
   libc_env.Install(lib_obj_folder, lib_kernel)
   libc_env.Alias('install', lib_obj_folder)
 
+  linux_shim_objects = libc_env.SConscript("#SConscript-linux_shim", 'libc_env', variant_dir='output', duplicate=0)
+  linux_shim_lib = StaticLibrary("output/azalea_libc/azalea_linux_shim", linux_shim_objects)
+  libc_env.Install(lib_obj_folder, linux_shim_lib)
+
   headers = libc_env.File(Glob("include/*.h"))
   libc_env.Install(lib_include_folder, headers)
   libc_env.Alias('install', lib_include_folder)
 
-  bits_headers = [libc_env.File("output/bits/alltypes.h"), libc_env.Glob("arch/x86_64/bits/*.h"), libc_env.File("arch/generic/bits/errno.h")]
+  bits_headers = [
+    libc_env.File("output/bits/alltypes.h"),
+    libc_env.Glob("arch/x86_64/bits/*.h"),
+    libc_env.File("arch/generic/bits/errno.h"),
+    libc_env.File("arch/generic/bits/resource.h"),
+    ]
   bits_folder = os.path.join(lib_include_folder, "bits")
   libc_env.Install(bits_folder, bits_headers)
   libc_env.Alias('install', bits_headers)
+
+  sys_headers = [
+    libc_env.File("include/sys/file.h"),
+    libc_env.File("include/sys/param.h"),
+    libc_env.File("include/sys/resource.h"),
+    libc_env.File("include/sys/time.h"),
+    libc_env.File("include/sys/types.h"),
+    libc_env.File("include/sys/select.h"),
+    libc_env.File("include/sys/stat.h"),
+    libc_env.File("include/sys/sysmacros.h"),
+
+    ]
+  sys_folder = os.path.join(lib_include_folder, "sys")
+  libc_env.Install(sys_folder, sys_headers)
+  libc_env.Alias('install', sys_headers)
 
 def build_default_env():
   global at_header_preproc
@@ -57,6 +81,7 @@ def build_default_env():
   env['CXXCOMSTR'] =  "Compiling:    $TARGET"
   env['LINKCOMSTR'] = "Linking:      $TARGET"
   env['ARCOMSTR'] =   "(pre-linking) $TARGET"
+  env['RANLIBCOMSTR'] = "Indexing:     $TARGET"
   env['LIBS'] = [ ]
   env.Append(BUILDERS = {'AlltypesHeaderBuilder' : at_header_preproc})
 

@@ -6,34 +6,35 @@ off_t __stdio_seek(FILE *f, off_t off, int whence)
 {
 	ERR_CODE ec;
 	unsigned long file_len;
+	SEEK_OFFSET off_d;
+	uint64_t new_off;
 
 	switch(whence)
 	{
 	case SEEK_SET:
-		f->seek_pos = off;
+		off_d = FROM_START;
 		break;
 
 	case SEEK_CUR:
-		f->seek_pos += off;
+		off_d = FROM_CUR;
 		break;
 
 	case SEEK_END:
-		ec = syscall_get_handle_data_len(f->fd, &file_len);
-		if (ec == NO_ERROR)
-		{
-			f->seek_pos = off + file_len;
-		}
-		else
-		{
-			f->seek_pos = 0;
-			f->flags |= F_ERR;
-		}
+		off_d = FROM_END;
+		break;
 
 	default:
-		f->seek_pos = 0;
 		f->flags |= F_ERR;
 		break;
 	}
 
-	return f->seek_pos;
+	if ((f->flags & F_ERR) == 0)
+	{
+		if (syscall_seek_handle(f->fd, off, off_d, &new_off) != NO_ERROR)
+		{
+			f->flags |= F_ERR;
+		}
+	}
+
+	return new_off;
 }

@@ -1,15 +1,13 @@
 #include <signal.h>
 #include <stdint.h>
-#include "syscall.h"
+#include <assert.h>
 #include "pthread_impl.h"
+
+/* Known defects:
+ * - Azalea doesn't support signals at all! So, if this function is called, we can only really abort.
+ */
 
 int raise(int sig)
 {
-	int tid, ret;
-	sigset_t set;
-	__block_app_sigs(&set);
-	tid = __syscall(SYS_gettid);
-	ret = syscall(SYS_tkill, tid, sig);
-	__restore_sigs(&set);
-	return ret;
+	assert(0);
 }

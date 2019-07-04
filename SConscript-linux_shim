@@ -1,0 +1,34 @@
+Import('libc_env')
+
+dependencies = [
+    "src/conf/sysconf.c",
+
+    "src/fcntl/open.c",
+
+    "src/signal/raise.c",
+
+    "src/stat/chmod.c",
+    "src/stat/fstat.c",
+    "src/stat/lstat.c",
+    "src/stat/stat.c",
+    "src/stat/umask.c",
+
+    "src/unistd/_exit.c",
+    "src/unistd/access.c",
+    "src/unistd/close.c",
+    "src/unistd/getcwd.c",
+    "src/unistd/isatty.c",
+    "src/unistd/lseek.c",
+    "src/unistd/read.c",
+    "src/unistd/unlink.c",
+  ]
+
+at_header_obj = libc_env.AlltypesHeaderBuilder("bits/alltypes", ["#/arch/x86_64/bits/alltypes", "#/include/alltypes"])
+
+lib_obj = [ ]
+for f in dependencies:
+  lib_obj = lib_obj + [ libc_env.Object(f) ]
+
+libc_env.Depends("*.c", "bits/alltypes.h")
+
+Return ('lib_obj')

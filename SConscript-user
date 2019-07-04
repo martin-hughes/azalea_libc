@@ -16,6 +16,7 @@ dependencies = [
 
     "src/exit/_Exit.c",
     "src/exit/abort.c",
+    "src/exit/assert.c",
     "src/exit/exit.c",
 
     "src/internal/floatscan.c",
@@ -26,6 +27,10 @@ dependencies = [
 
     "src/malloc/expand_heap.c",
     "src/malloc/malloc.c",
+
+    #These probably shouldn't be part of libc...
+    "src/misc/getopt.c",
+    "src/misc/getopt_long.c",
 
     "src/mman/madvise.c",
     "src/mman/mmap.c",
@@ -49,11 +54,13 @@ dependencies = [
     "src/stdio/fflush.c",
     "src/stdio/fgetc.c",
     "src/stdio/fgets.c",
+    "src/stdio/fileno.c",
     "src/stdio/fopen.c",
     "src/stdio/fprintf.c",
     "src/stdio/fputc.c",
     "src/stdio/fputs.c",
     "src/stdio/fread.c",
+    "src/stdio/fscanf.c",
     "src/stdio/fseek.c",
     "src/stdio/ftell.c",
     "src/stdio/getc.c",
@@ -68,6 +75,7 @@ dependencies = [
     "src/stdio/putchar.c",
     "src/stdio/puts.c",
     "src/stdio/remove.c",
+    "src/stdio/rewind.c",
     "src/stdio/scanf.c",
     "src/stdio/sscanf.c",
     "src/stdio/stderr.c",

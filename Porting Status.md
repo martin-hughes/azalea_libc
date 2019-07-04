@@ -30,6 +30,7 @@ been fully ported to Azalea.
 - There are a whole load of warnings generated.
 - File mode flags are basically unsupported.
 - mmap only maps, it doesn't look at any of the flags or other nice features. It also can't memory map files!
+- errno is per-process, not per-thread!
 
 ## Minor deficiencies
 
@@ -42,39 +43,46 @@ Various other minor deficiencies can be found by searching "Azalea deficiency" i
 
 ### C99 Headers
 
-Status | File name | Notes
----------|-----------|------
-not started | assert.h | Requires files support
-not started | complex.h | Needs floating point support to work first
-incomplete | ctype.h | Compiles but not tested.
-incomplete | errno.h | Not tested, but should just work
-not started | fenv.h | Needs floating point support to work first
-not started | float.h | Needs floating point support to work first
-not started | inttypes.h | Not expecting changes from musl version
-Completed | iso646.h | No changes from musl version
-Completed | limits.h | No changes from musl version
-incomplete | locale.h | Included in the library, but not tested.
-incomplete | math.h | Some functions are included, but not tested
-not started | setjmp.h | Ought not be too bad.
-not started | signal.h | Probably a fair amount of work - we don't do "signals" as such.
-Completed | stdalign.h | No changes from musl version
-incomplete | stdarg.h | Not tested, but should just work
-not started | stdatomic.h | Not part of the musl library?
-Completed | stdbool.h | No changes from musl version
-incomplete | stddef.h | Not tested, but should just work
-incomplete | stdint.h | No changes made, not expecting any.
-incomplete | stdio.h | A fair amount of work. Malloc/free do now work. Printf works, using a pretty generic path
-incomplete | stdlib.h | Some parts ported but not fully tested. Malloc-type and math functions still to come.
-Completed | stdnoreturn.h | No changes from musl version. Only a single macro.
-incomplete | string.h | Ported but not fully tested
-not started | tgmath.h | Probably not too much work
-not started | threads.h | Plenty of work, although largely I think it's a case of swapping syscalls - and extending the Azalea calls that are available.
-incomplete | time.h | Most functions work, but sleeping does not, not does setting timers. Other minor omissions too.
-not started | uchar.h | Looks like not too much work.
-not started | wchar.h | Could be quite a lot of work.
-not started | wctype.h | Oughtn't be too bad.
+Note: At this point, basically none of these features have been thoroughly tested. Having a status of Completed doesn't
+necessarily mean working properly!
+
+Status | Tested? | File name | Notes
+-------|---------|-----------|-------
+Completed | No | assert.h | Should now work.
+not started | No | complex.h | Needs floating point support to work first
+Completed | No | ctype.h | Compiles but not tested.
+Broken | No | errno.h | Only one errno per process is given. Better thread support is needed in order to re-enable per-thread errno.
+not started | No | fenv.h | Needs floating point support to work first
+not started | No | float.h | Needs floating point support to work first
+Completed | No | inttypes.h | No changes from musl version
+Completed | No | iso646.h | No changes from musl version
+Completed | No | limits.h | No changes from musl version
+Completed | No | locale.h | Included in the library, but not tested.
+incomplete | No | math.h | Some functions are included, but not tested
+not started | No | setjmp.h | Ought not be too bad.
+not started | No | signal.h | Probably a fair amount of work - we don't do "signals" as such.
+Completed | No | stdalign.h | No changes from musl version
+Completed | No | stdarg.h | Not tested, but should just work
+not started | No | stdatomic.h | Not part of the musl library?
+Completed | No | stdbool.h | No changes from musl version
+Completed | No | stddef.h | Not tested, but should just work
+Completed | No | stdint.h | No changes made, not expecting any.
+incomplete | No | stdio.h | A fair amount of work left, although a large proportion of file-based functionality works.
+Completed | No | stdlib.h | I think all parts of this are included in the library now, but I may be wrong.
+Completed | No | stdnoreturn.h | No changes from musl version. Only a single macro.
+Completed | No | string.h | Ported but not fully tested
+not started | No | tgmath.h | Probably not too much work
+not started | No | threads.h | Plenty of work, although largely I think it's a case of swapping syscalls - and extending the Azalea calls that are available.
+incomplete | No | time.h | Most functions work, but sleeping does not, not does setting timers. Other minor omissions too.
+not started | No | uchar.h | Looks like not too much work.
+not started | No | wchar.h | Could be quite a lot of work.
+not started | No | wctype.h | Oughtn't be too bad.
 
 ### Other Headers
+
+Status | Tested? | File name | Notes
+-------|---------|-----------|-------
+incomplete | No | unistd.h | It's highly recommended to avoid using this header. Most of the supported functions have been quickly hacked together and probably don't work correctly.
 
 No deliberate progress has been made on any of the following headers.
 
@@ -134,7 +142,6 @@ No deliberate progress has been made on any of the following headers.
 - termios.h
 - ucontext.h
 - ulimit.h
-- unistd.h
 - utime.h
 - utmp.h
 - utmpx.h

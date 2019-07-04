@@ -1,11 +1,27 @@
 #include <fcntl.h>
 #include <stdarg.h>
-#include "syscall.h"
+#include <string.h>
 #include "libc.h"
+
+#include <azalea/syscall.h>
+
+#include <stdio.h>
+
+/* Known defects:
+ * - Most of the O_* flags will not work as expected...
+ * - What do we do if we try to create a file and it can't have its length set to zero?
+ */
 
 int open(const char *filename, int flags, ...)
 {
 	mode_t mode = 0;
+	ERR_CODE ec;
+	GEN_HANDLE h;
+	int fd_num = 0;
+	uint32_t syscall_flags = 0;
+	uint64_t file_len;
+
+	/*printf("Opening\n");*/
 
 	if ((flags & O_CREAT) || (flags & O_TMPFILE) == O_TMPFILE) {
 		va_list ap;
@@ -14,11 +30,31 @@ int open(const char *filename, int flags, ...)
 		va_end(ap);
 	}
 
-	int fd = __sys_open_cp(filename, flags, mode);
-	if (fd>=0 && (flags & O_CLOEXEC))
-		__syscall(SYS_fcntl, fd, F_SETFD, FD_CLOEXEC);
+	if (flags & O_CREAT)
+	{
+		syscall_flags = H_CREATE_IF_NEW;
+	}
+	ec = syscall_open_handle(filename, strlen(filename), &h, syscall_flags);
 
-	return __syscall_ret(fd);
+	if (ec == NO_ERROR)
+	{
+		if (flags & O_CREAT)
+		{
+			/* O_CREAT basically requests the file length be set to zero. What should we do if this fails? */
+			syscall_set_handle_data_len(h, 0);
+		}
+		else if (flags & O_APPEND)
+		{
+			ec = syscall_get_handle_data_len(h, &file_len);
+			syscall_seek_handle(h, file_len, FROM_START, NULL);
+		}
+	}
+	else
+	{
+		h = 0;
+	}
+
+	return h;
 }
 
 LFS64(open);

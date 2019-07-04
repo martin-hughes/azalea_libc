@@ -48,7 +48,6 @@ FILE *__fdopen(GEN_HANDLE fd, const char *mode)
 	} */
 
 	f->fd = fd;
-	f->seek_pos = 0;
 	f->buf = (unsigned char *)f + sizeof *f + UNGET;
 	f->buf_size = BUFSIZ;
 

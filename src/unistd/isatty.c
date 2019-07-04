@@ -1,9 +1,12 @@
 #include <unistd.h>
-#include <sys/ioctl.h>
-#include "syscall.h"
+#include "errno.h"
+
+/* Known defects:
+ * - Plainly this ignores the fact that we might actually be connected to a terminal...
+ */
 
 int isatty(int fd)
 {
-	struct winsize wsz;
-	return !__syscall(SYS_ioctl, fd, TIOCGWINSZ, &wsz);
+	errno = ENOTTY;
+	return 0;
 }
