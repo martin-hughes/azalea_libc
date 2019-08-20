@@ -6,5 +6,5 @@
 
 int remove(const char *path)
 {
-	return syscall_delete_object(path);
+	return syscall_delete_object(path, strlen(path));
 }
