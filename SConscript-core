@@ -8,6 +8,7 @@ dependencies = [
 
     "src/errno/__errno_location.c",
 
+    "src/internal/floatscan.c",
     "src/internal/intscan.c",
     "src/internal/shgetc.c",
 
