@@ -10,10 +10,10 @@ FILE *volatile __stdin_used = &f;
 
 void __open_stdin()
 {
-	FILE *stdin_f = fopen("proc\\0\\stdin", "r");
+	FILE *stdin_f = fopen("\\proc\\0\\stdin", "r");
 	if (stdin_f == NULL)
 	{
-		stdin_f = fopen("dev\\null", "r");
+		stdin_f = fopen("\\dev\\null", "r");
 		if (stdin_f == NULL)
 		{
 			exit(-1);

@@ -9,10 +9,10 @@ FILE *volatile __stderr_used = &f;
 
 void __open_stderr()
 {
-	FILE *stderr_f = fopen("proc\\0\\stderr", "w");
+	FILE *stderr_f = fopen("\\proc\\0\\stderr", "w");
 	if (stderr_f == NULL)
 	{
-		stderr_f = fopen("dev\\null", "w");
+		stderr_f = fopen("\\dev\\null", "w");
 		if (stderr_f == NULL)
 		{
 			exit(-1);
