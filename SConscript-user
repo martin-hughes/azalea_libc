@@ -3,6 +3,8 @@ Import('libc_env')
 dependencies = [
     "crt/crt1.c",
 
+    Glob("src/complex/*.c"),
+
     "src/env/__environ.c",
     "src/env/__init_tls.c",
     "src/env/__libc_start_main.c",
@@ -19,6 +21,9 @@ dependencies = [
     "src/exit/assert.c",
     "src/exit/exit.c",
 
+    Glob("src/fenv/*.c"),
+    Glob("src/fenv/x86_64/*.s"),
+
     "src/internal/floatscan.c",
     "src/internal/libc.c",
     "src/internal/syscall_ret.c",
@@ -27,6 +32,9 @@ dependencies = [
 
     "src/malloc/expand_heap.c",
     "src/malloc/malloc.c",
+
+    Glob("src/math/*.c"),
+    Glob("src/math/x86_64/*.s"),
 
     #These probably shouldn't be part of libc...
     "src/misc/getopt.c",

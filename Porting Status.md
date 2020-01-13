@@ -49,16 +49,16 @@ necessarily mean working properly!
 Status | Tested? | File name | Notes
 -------|---------|-----------|-------
 Completed | No | assert.h | Should now work.
-not started | No | complex.h | Needs floating point support to work first
+Completed | No | complex.h | Compiled in but untested.
 Completed | No | ctype.h | Compiles but not tested.
 Broken | No | errno.h | Only one errno per process is given. Better thread support is needed in order to re-enable per-thread errno.
-not started | No | fenv.h | Needs floating point support to work first
-not started | No | float.h | Needs floating point support to work first
+Completed | Partial | fenv.h | All functions added, but only very basic testing completed.
+Completed | N/A | float.h | Header doesn't declare new functionality, only constants.
 Completed | No | inttypes.h | No changes from musl version
 Completed | No | iso646.h | No changes from musl version
 Completed | No | limits.h | No changes from musl version
 Completed | No | locale.h | Included in the library, but not tested.
-incomplete | No | math.h | Some functions are included, but not tested
+Completed | Partial | math.h | All functions are included. Only basic floating point testing completed.
 not started | No | setjmp.h | Ought not be too bad.
 not started | No | signal.h | Probably a fair amount of work - we don't do "signals" as such.
 Completed | No | stdalign.h | No changes from musl version
@@ -71,7 +71,7 @@ incomplete | No | stdio.h | A fair amount of work left, although a large proport
 Completed | No | stdlib.h | I think all parts of this are included in the library now, but I may be wrong.
 Completed | No | stdnoreturn.h | No changes from musl version. Only a single macro.
 Completed | No | string.h | Ported but not fully tested
-not started | No | tgmath.h | Probably not too much work
+Completed | No | tgmath.h | Untested. I think this is simply a set of macro definitions around math.h and complex.h
 not started | No | threads.h | Plenty of work, although largely I think it's a case of swapping syscalls - and extending the Azalea calls that are available.
 incomplete | No | time.h | Most functions work, but sleeping does not, not does setting timers. Other minor omissions too.
 not started | No | uchar.h | Looks like not too much work.

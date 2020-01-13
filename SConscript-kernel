@@ -2,6 +2,17 @@ Import('libc_env')
 
 dependencies = [
     "src/thread/__lock-kernel.c",
+
+    "src/math/__fpclassify.c",
+    "src/math/__fpclassifyl.c",
+    "src/math/__signbit.c",
+    "src/math/__signbitl.c",
+    "src/math/copysignl.c",
+    "src/math/fabs.c",
+    "src/math/fmodl.c",
+    "src/math/frexpl.c",
+    "src/math/scalbn.c",
+    "src/math/scalbnl.c",
   ]
 
 lib_obj = [ ]

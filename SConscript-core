@@ -14,17 +14,6 @@ dependencies = [
 
     "src/malloc/posix_memalign.c",
 
-    "src/math/__fpclassify.c",
-    "src/math/__fpclassifyl.c",
-    "src/math/__signbit.c",
-    "src/math/__signbitl.c",
-    "src/math/copysignl.c",
-    "src/math/fabs.c",
-    "src/math/fmodl.c",
-    "src/math/frexpl.c",
-    "src/math/scalbn.c",
-    "src/math/scalbnl.c",
-
     "src/stdio/__lockfile.c",
     "src/stdio/__stdio_exit.c",
     "src/stdio/__toread.c",

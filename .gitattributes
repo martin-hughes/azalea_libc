@@ -2,3 +2,4 @@
 # really badly with CRLFs
 *.in text eol=lf
 *.sed text eol=lf
+*.s text eol=lf
