@@ -1,8 +1,6 @@
 #include <signal.h>
 #include <errno.h>
 #include <string.h>
-#include "syscall.h"
-#include "pthread_impl.h"
 #include "libc.h"
 #include "ksigaction.h"
 
@@ -16,7 +14,7 @@ void __get_handler_set(sigset_t *set)
 
 int __libc_sigaction(int sig, const struct sigaction *restrict sa, struct sigaction *restrict old)
 {
-	struct k_sigaction ksa, ksa_old;
+	/*struct k_sigaction ksa, ksa_old;
 	if (sa) {
 		if ((uintptr_t)sa->sa_handler > 1UL) {
 			a_or_l(handler_set+(sig-1)/(8*sizeof(long)),
@@ -30,7 +28,7 @@ int __libc_sigaction(int sig, const struct sigaction *restrict sa, struct sigact
 			 * receive an illegal sigset_t (with them
 			 * blocked) as part of the ucontext_t passed
 			 * to the signal handler. */
-			if (!libc.threaded && !unmask_done) {
+			/*if (!libc.threaded && !unmask_done) {
 				__syscall(SYS_rt_sigprocmask, SIG_UNBLOCK,
 					SIGPT_SET, 0, _NSIG/8);
 				unmask_done = 1;
@@ -48,16 +46,20 @@ int __libc_sigaction(int sig, const struct sigaction *restrict sa, struct sigact
 		old->sa_flags = ksa_old.flags;
 		memcpy(&old->sa_mask, &ksa_old.mask, sizeof ksa_old.mask);
 	}
-	return 0;
+	return 0;*/
+	errno = ENOSYS;
+	return -1;
 }
 
 int __sigaction(int sig, const struct sigaction *restrict sa, struct sigaction *restrict old)
 {
-	if (sig-32U < 3 || sig-1U >= _NSIG-1) {
+	/*if (sig-32U < 3 || sig-1U >= _NSIG-1) {
 		errno = EINVAL;
 		return -1;
 	}
-	return __libc_sigaction(sig, sa, old);
+	return __libc_sigaction(sig, sa, old);*/
+	errno = ENOSYS;
+	return -1;
 }
 
 weak_alias(__sigaction, sigaction);

@@ -39,6 +39,7 @@ dependencies = [
     #These probably shouldn't be part of libc...
     "src/misc/getopt.c",
     "src/misc/getopt_long.c",
+    "src/misc/ioctl.c",
 
     "src/mman/madvise.c",
     "src/mman/mmap.c",
@@ -63,6 +64,7 @@ dependencies = [
     "src/stdio/fgetc.c",
     "src/stdio/fgets.c",
     "src/stdio/fileno.c",
+    "src/stdio/flockfile.c",
     "src/stdio/fopen.c",
     "src/stdio/fprintf.c",
     "src/stdio/fputc.c",
@@ -71,6 +73,7 @@ dependencies = [
     "src/stdio/fscanf.c",
     "src/stdio/fseek.c",
     "src/stdio/ftell.c",
+    "src/stdio/funlockfile.c",
     "src/stdio/getc.c",
     "src/stdio/getchar.c",
     "src/stdio/getchar_unlocked.c",

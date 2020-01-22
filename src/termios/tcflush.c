@@ -3,5 +3,6 @@
 
 int tcflush(int fd, int queue)
 {
-	return ioctl(fd, TCFLSH, queue);
+	/* Has no meaning in Azalea */
+	return 0;
 }

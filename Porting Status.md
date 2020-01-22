@@ -31,6 +31,8 @@ been fully ported to Azalea.
 - File mode flags are basically unsupported.
 - mmap only maps, it doesn't look at any of the flags or other nice features. It also can't memory map files!
 - errno is per-process, not per-thread!
+- There is no support for pthread, which means some locks are not valid - there are places in the code marked with
+  /* PTHREAD where locking code has been commented out.
 
 ## Minor deficiencies
 
@@ -82,7 +84,9 @@ not started | No | wctype.h | Oughtn't be too bad.
 
 Status | Tested? | File name | Notes
 -------|---------|-----------|-------
-incomplete | No | unistd.h | It's highly recommended to avoid using this header. Most of the supported functions have been quickly hacked together and probably don't work correctly.
+incomplete | No | unistd.h | It's highly recommended to avoid using this header. Most of the supported functions have been quickly hacked together and probably don't work correctly. Frankly a bit of a mess.
+incomplete | No | getopt.h | Should just work.
+incomplete | No | termios.h | Some pretty minimal work has been completed - tc(set|set)attr are implemented but only support a trivial set of flags.
 
 No deliberate progress has been made on any of the following headers.
 
@@ -102,7 +106,6 @@ No deliberate progress has been made on any of the following headers.
 - fmtmsg.h
 - fnmatch.h
 - ftw.h
-- getopt.h
 - glob.h
 - grp.h
 - iconv.h
@@ -139,7 +142,6 @@ No deliberate progress has been made on any of the following headers.
 - sysexits.h
 - syslog.h
 - tar.h
-- termios.h
 - ucontext.h
 - ulimit.h
 - utime.h

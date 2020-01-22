@@ -5,11 +5,12 @@ void __unlist_locked_file(FILE *);
 
 void funlockfile(FILE *f)
 {
+	/* PTHREAD
 	if (f->lockcount == 1) {
 		__unlist_locked_file(f);
 		f->lockcount = 0;
 		__unlockfile(f);
 	} else {
 		f->lockcount--;
-	}
+	} */
 }

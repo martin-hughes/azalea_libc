@@ -1,17 +1,27 @@
 Import('libc_env')
 
 dependencies = [
+    "src/conf/fpathconf.c",
     "src/conf/sysconf.c",
 
     "src/fcntl/open.c",
 
+    "src/select/poll.c",
+
     "src/signal/raise.c",
+    "src/signal/sigaction.c",
+    "src/signal/signal.c",
 
     "src/stat/chmod.c",
     "src/stat/fstat.c",
     "src/stat/lstat.c",
     "src/stat/stat.c",
     "src/stat/umask.c",
+
+    "src/termios/cfgetospeed.c",
+    "src/termios/tcgetattr.c",
+    "src/termios/tcflush.c",
+    "src/termios/tcsetattr.c",
 
     "src/unistd/_exit.c",
     "src/unistd/access.c",
@@ -21,6 +31,7 @@ dependencies = [
     "src/unistd/lseek.c",
     "src/unistd/read.c",
     "src/unistd/unlink.c",
+    "src/unistd/write.c",
   ]
 
 at_header_obj = libc_env.AlltypesHeaderBuilder("bits/alltypes", ["#/arch/x86_64/bits/alltypes", "#/include/alltypes"])

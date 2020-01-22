@@ -45,7 +45,9 @@ def main_build_script(vars):
     libc_env.File("output/bits/alltypes.h"),
     libc_env.Glob("arch/x86_64/bits/*.h"),
     libc_env.File("arch/generic/bits/errno.h"),
+    libc_env.File("arch/generic/bits/poll.h"),
     libc_env.File("arch/generic/bits/resource.h"),
+    libc_env.File("arch/generic/bits/termios.h"),
     ]
   bits_folder = os.path.join(lib_include_folder, "bits")
   libc_env.Install(bits_folder, bits_headers)
@@ -54,6 +56,7 @@ def main_build_script(vars):
   sys_headers = [
     libc_env.File("include/sys/file.h"),
     libc_env.File("include/sys/param.h"),
+    libc_env.File("include/sys/poll.h"),
     libc_env.File("include/sys/resource.h"),
     libc_env.File("include/sys/time.h"),
     libc_env.File("include/sys/types.h"),

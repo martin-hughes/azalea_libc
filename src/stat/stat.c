@@ -57,6 +57,11 @@ int stat(const char *restrict path, struct stat *restrict buf)
 			buf->st_size = (off_t)size;
 		}
 		syscall_close_handle(h);
+		buf->st_mode = S_IFREG | 0777;
+	}
+	else if (!props.is_leaf)
+	{
+		buf->st_mode = S_IFDIR | 0777;
 	}
 
 	return 0;
