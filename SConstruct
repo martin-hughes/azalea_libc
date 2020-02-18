@@ -8,8 +8,8 @@ import os
 def main_build_script(vars):
   global dependencies
   libc_env = build_default_env()
-  libc_env['CXXFLAGS'] = '-nostdlib -nostdinc -nodefaultlibs -mcmodel=large -ffreestanding -fno-exceptions -std=c++17 -U _LINUX -U __linux__ -D __AZALEA__ -D KL_TRACE_BY_SERIAL_PORT -Wno-bitwise-op-parentheses -Wno-shift-op-parentheses'
-  libc_env['CFLAGS'] = '-nostdlib -nostdinc -nodefaultlibs -mcmodel=large -ffreestanding -fno-exceptions -U _LINUX -U __linux__ -D __AZALEA__ -D KL_TRACE_BY_SERIAL_PORT -Wno-bitwise-op-parentheses -Wno-shift-op-parentheses'
+  libc_env['CXXFLAGS'] = '-nostdlib -nostdinc -nodefaultlibs -mcmodel=large -ffreestanding -fno-exceptions -std=c++17 -U _LINUX -U __linux__ -D __AZALEA__ -D KL_TRACE_BY_SERIAL_PORT -Wno-bitwise-op-parentheses -Wno-shift-op-parentheses -funwind-tables'
+  libc_env['CFLAGS'] = '-nostdlib -nostdinc -nodefaultlibs -mcmodel=large -ffreestanding -fno-exceptions -U _LINUX -U __linux__ -D __AZALEA__ -D KL_TRACE_BY_SERIAL_PORT -Wno-bitwise-op-parentheses -Wno-shift-op-parentheses -funwind-tables'
   libc_env['LINKFLAGS'] = "-T build_support/kernel_stage.ld --start-group"
   libc_env['LINK'] = 'ld -Map output/kernel_map.map'
   libc_env.AppendENVPath('CPATH', '#/include')
