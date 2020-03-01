@@ -5,69 +5,112 @@
 
 import os
 
+shared_flags_list = [
+  '-nostdlib',
+  '-nostdinc',
+  '-nodefaultlibs',
+  '-mcmodel=large',
+  '-ffreestanding',
+  '-U _LINUX',
+  '-U __linux__',
+  '-D __AZALEA__',
+  '-Wno-bitwise-op-parentheses',
+  '-Wno-shift-op-parentheses',
+]
+
+kernel_extra_flags_list = [
+  '-fno-exceptions',
+  '-funwind-tables',
+]
+
+kernel_cxx_flags_list = [
+  '-std=c++17',
+]
+
+user_extra_flags_list = [
+
+]
+
+user_cxx_flags_list = [
+  '-std=c++17',
+]
+
 def main_build_script(vars):
   global dependencies
-  libc_env = build_default_env()
-  libc_env['CXXFLAGS'] = '-nostdlib -nostdinc -nodefaultlibs -mcmodel=large -ffreestanding -fno-exceptions -std=c++17 -U _LINUX -U __linux__ -D __AZALEA__ -D KL_TRACE_BY_SERIAL_PORT -Wno-bitwise-op-parentheses -Wno-shift-op-parentheses -funwind-tables'
-  libc_env['CFLAGS'] = '-nostdlib -nostdinc -nodefaultlibs -mcmodel=large -ffreestanding -fno-exceptions -U _LINUX -U __linux__ -D __AZALEA__ -D KL_TRACE_BY_SERIAL_PORT -Wno-bitwise-op-parentheses -Wno-shift-op-parentheses -funwind-tables'
-  libc_env['LINKFLAGS'] = "-T build_support/kernel_stage.ld --start-group"
-  libc_env['LINK'] = 'ld -Map output/kernel_map.map'
-  libc_env.AppendENVPath('CPATH', '#/include')
-  libc_env.AppendENVPath('CPATH', '#/output')
-  libc_env.AppendENVPath('CPATH', '#/arch/x86_64')
-  libc_env.AppendENVPath('CPATH', '#/arch/generic')
-  libc_env.AppendENVPath('CPATH', '#/src/internal')
-  libc_env.AppendENVPath('CPATH', os.path.join(vars['sys_image_root'], "apps", "developer", "kernel", "include"))
+  core_env = build_default_env()
+  core_env.AppendENVPath('CPATH', '#/include')
+  core_env.AppendENVPath('CPATH', '#/output')
+  core_env.AppendENVPath('CPATH', '#/arch/x86_64')
+  core_env.AppendENVPath('CPATH', '#/arch/generic')
+  core_env.AppendENVPath('CPATH', '#/src/internal')
+  core_env.AppendENVPath('CPATH', os.path.join(vars['sys_image_root'], "apps", "developer", "kernel", "include"))
 
-  lib_core_objects = libc_env.SConscript("#SConscript-core", 'libc_env', variant_dir='output', duplicate=0)
-  lib_user_objects = libc_env.SConscript("#SConscript-user", 'libc_env', variant_dir='output', duplicate=0)
-  lib_kernel_objects = libc_env.SConscript("#SConscript-kernel", 'libc_env', variant_dir='output', duplicate=0)
-  lib_all_objects = lib_core_objects + lib_user_objects
-  lib_complete = StaticLibrary("output/azalea_libc/azalea_libc", lib_all_objects)
-  lib_kernel_objects = lib_core_objects + lib_kernel_objects
-  lib_kernel = StaticLibrary("output/azalea_libc/azalea_libc_kernel", lib_kernel_objects)
+  kernel_env = core_env.Clone()
+  kernel_env['CXXFLAGS'] = " ".join(shared_flags_list + kernel_extra_flags_list + kernel_cxx_flags_list)
+  kernel_env['CFLAGS'] = " ".join(shared_flags_list + kernel_extra_flags_list)
+
+  user_env = core_env.Clone()
+  user_env['CXXFLAGS'] = " ".join(shared_flags_list + user_extra_flags_list + user_cxx_flags_list)
+  user_env['CFLAGS'] = " ".join(shared_flags_list + user_extra_flags_list)
+
+  # Construct 'core' objects for both user mode and kernel mode libraries.
+  kernel_core_objects = kernel_env.SConscript("#SConscript-core", {'libc_env' : kernel_env}, variant_dir='output/kernel', duplicate=0)
+  user_core_objects = user_env.SConscript("#SConscript-core", {'libc_env' : user_env}, variant_dir='output/user', duplicate=0)
+
+  # Construct kernel mode objects only in kernel mode
+  lib_kernel_objects = kernel_env.SConscript("#SConscript-kernel", {'libc_env' : kernel_env}, variant_dir='output/kernel', duplicate=0)
+
+  # Construct user mode objects only in user mode
+  lib_user_objects = user_env.SConscript("#SConscript-user", {'libc_env' : user_env}, variant_dir='output/user', duplicate=0)
+
+  kernel_lib_objects = kernel_core_objects + lib_kernel_objects
+  user_lib_objects = user_core_objects + lib_user_objects
+
+  user_lib_complete = StaticLibrary("output/azalea_libc/azalea_libc", user_lib_objects)
+  kernel_lib_complete = StaticLibrary("output/azalea_libc/azalea_libc_kernel", kernel_lib_objects)
+
   lib_folder = os.path.join(vars['sys_image_root'], "apps", "developer", "libc")
   lib_obj_folder = os.path.join(lib_folder, "lib")
   lib_include_folder = os.path.join(lib_folder, "include")
-  libc_env.Install(lib_obj_folder, lib_complete)
-  libc_env.Install(lib_obj_folder, lib_kernel)
-  libc_env.Alias('install', lib_obj_folder)
+  core_env.Install(lib_obj_folder, user_lib_complete)
+  core_env.Install(lib_obj_folder, kernel_lib_complete)
+  core_env.Alias('install', lib_obj_folder)
 
-  linux_shim_objects = libc_env.SConscript("#SConscript-linux_shim", 'libc_env', variant_dir='output', duplicate=0)
+  linux_shim_objects = user_env.SConscript("#SConscript-linux_shim", {'libc_env' : user_env}, variant_dir='output', duplicate=0)
   linux_shim_lib = StaticLibrary("output/azalea_libc/azalea_linux_shim", linux_shim_objects)
-  libc_env.Install(lib_obj_folder, linux_shim_lib)
+  core_env.Install(lib_obj_folder, linux_shim_lib)
 
-  headers = libc_env.File(Glob("include/*.h"))
-  libc_env.Install(lib_include_folder, headers)
-  libc_env.Alias('install', lib_include_folder)
+  headers = core_env.File(Glob("include/*.h"))
+  core_env.Install(lib_include_folder, headers)
+  core_env.Alias('install', lib_include_folder)
 
   bits_headers = [
-    libc_env.File("output/bits/alltypes.h"),
-    libc_env.Glob("arch/x86_64/bits/*.h"),
-    libc_env.File("arch/generic/bits/errno.h"),
-    libc_env.File("arch/generic/bits/poll.h"),
-    libc_env.File("arch/generic/bits/resource.h"),
-    libc_env.File("arch/generic/bits/termios.h"),
+    core_env.File("output/bits/alltypes.h"),
+    core_env.Glob("arch/x86_64/bits/*.h"),
+    core_env.File("arch/generic/bits/errno.h"),
+    core_env.File("arch/generic/bits/poll.h"),
+    core_env.File("arch/generic/bits/resource.h"),
+    core_env.File("arch/generic/bits/termios.h"),
     ]
   bits_folder = os.path.join(lib_include_folder, "bits")
-  libc_env.Install(bits_folder, bits_headers)
-  libc_env.Alias('install', bits_headers)
+  core_env.Install(bits_folder, bits_headers)
+  core_env.Alias('install', bits_headers)
 
   sys_headers = [
-    libc_env.File("include/sys/file.h"),
-    libc_env.File("include/sys/param.h"),
-    libc_env.File("include/sys/poll.h"),
-    libc_env.File("include/sys/resource.h"),
-    libc_env.File("include/sys/time.h"),
-    libc_env.File("include/sys/types.h"),
-    libc_env.File("include/sys/select.h"),
-    libc_env.File("include/sys/stat.h"),
-    libc_env.File("include/sys/sysmacros.h"),
+    core_env.File("include/sys/file.h"),
+    core_env.File("include/sys/param.h"),
+    core_env.File("include/sys/poll.h"),
+    core_env.File("include/sys/resource.h"),
+    core_env.File("include/sys/time.h"),
+    core_env.File("include/sys/types.h"),
+    core_env.File("include/sys/select.h"),
+    core_env.File("include/sys/stat.h"),
+    core_env.File("include/sys/sysmacros.h"),
 
     ]
   sys_folder = os.path.join(lib_include_folder, "sys")
-  libc_env.Install(sys_folder, sys_headers)
-  libc_env.Alias('install', sys_headers)
+  core_env.Install(sys_folder, sys_headers)
+  core_env.Alias('install', sys_headers)
 
 def build_default_env():
   global at_header_preproc
