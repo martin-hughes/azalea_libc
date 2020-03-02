@@ -88,6 +88,7 @@ def main_build_script(vars):
     core_env.File("output/bits/alltypes.h"),
     core_env.Glob("arch/x86_64/bits/*.h"),
     core_env.File("arch/generic/bits/errno.h"),
+    core_env.File("arch/generic/bits/link.h"),
     core_env.File("arch/generic/bits/poll.h"),
     core_env.File("arch/generic/bits/resource.h"),
     core_env.File("arch/generic/bits/termios.h"),

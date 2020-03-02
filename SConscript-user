@@ -19,6 +19,7 @@ dependencies = [
     "src/exit/_Exit.c",
     "src/exit/abort.c",
     "src/exit/assert.c",
+    "src/exit/atexit.c",
     "src/exit/exit.c",
 
     Glob("src/fenv/*.c"),
