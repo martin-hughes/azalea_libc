@@ -141,11 +141,11 @@ void __wait(volatile int *, volatile int *, int, int);
 /* Azalea deficiency: priv and cnt are ignored */
 static inline void __wake(volatile void *addr, int cnt, int priv)
 {
-	syscall_futex_wake((volatile int *)addr);
+	syscall_futex_op((volatile int *)addr, FUTEX_WAKE, 0, 0, 0, 0);
 }
 static inline void __futexwait(volatile void *addr, int val, int priv)
 {
-	syscall_futex_wait((volatile int *)addr, val);
+	syscall_futex_op((volatile int *)addr, FUTEX_WAIT, val, 0, 0, 0);
 }
 
 void __acquire_ptc(void);
