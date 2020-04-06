@@ -14,21 +14,9 @@ int __pthread_mutex_unlock(pthread_mutex_t *m)
 			return EPERM;
 		if ((type&3) == PTHREAD_MUTEX_RECURSIVE && m->_m_count)
 			return m->_m_count--, 0;
-		if (!priv) {
-			self->robust_list.pending = &m->_m_next;
-			__vm_lock();
-		}
-		volatile void *prev = m->_m_prev;
-		volatile void *next = m->_m_next;
-		*(volatile void *volatile *)prev = next;
-		if (next != &self->robust_list.head) *(volatile void *volatile *)
-			((char *)next - sizeof(void *)) = prev;
 	}
 	cont = a_swap(&m->_m_lock, (type & 8) ? 0x7fffffff : 0);
-	if (type != PTHREAD_MUTEX_NORMAL && !priv) {
-		self->robust_list.pending = 0;
-		__vm_unlock();
-	}
+
 	if (waiters || cont<0)
 		__wake(&m->_m_lock, 1, priv);
 	return 0;
