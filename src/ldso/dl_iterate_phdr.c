@@ -14,7 +14,8 @@ static int static_dl_iterate_phdr(int(*callback)(struct dl_phdr_info *info, size
 	size_t base = 0;
 	size_t n;
 	struct dl_phdr_info info;
-	size_t i, aux[AUX_CNT] = {0};
+	/* This function is a placeholder for now since this information isn't provided to user programs */
+	/*size_t i, aux[AUX_CNT] = {0};
 
 	for (i=0; libc.auxv[i]; i+=2)
 		if (libc.auxv[i]<AUX_CNT) aux[libc.auxv[i]] = libc.auxv[i+1];
@@ -27,11 +28,11 @@ static int static_dl_iterate_phdr(int(*callback)(struct dl_phdr_info *info, size
 			base = (size_t)_DYNAMIC - phdr->p_vaddr;
 		if (phdr->p_type == PT_TLS)
 			tls_phdr = phdr;
-	}
+	}*/
 	info.dlpi_addr  = base;
 	info.dlpi_name  = "/proc/self/exe";
-	info.dlpi_phdr  = (void *)aux[AT_PHDR];
-	info.dlpi_phnum = aux[AT_PHNUM];
+	info.dlpi_phdr  = 0; /*(void *)aux[AT_PHDR];*/
+	info.dlpi_phnum = 0; /*aux[AT_PHNUM];*/
 	info.dlpi_adds  = 0;
 	info.dlpi_subs  = 0;
 	if (tls_phdr) {
