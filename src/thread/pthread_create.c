@@ -95,6 +95,9 @@ _Noreturn void __pthread_exit(void *result)
 		__unmapself(self->map_base, self->map_size);
 	}
 
+	/* The TID being set to zero is part of the check for termination in pthread_join */
+	self->tid = 0;
+
 	for (;;) syscall_exit_thread();
 }
 
@@ -263,6 +266,8 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 	new->self = new;
 	new->tsd = (void *)tsd;
 	new->locale = &libc.global_locale;
+	/* This matches the dubious value set in __init_tls - which should change one day! */
+	new->tid = &new->tid;
 	if (attr._a_detach) {
 		new->detached = 1;
 		flags -= CLONE_CHILD_CLEARTID;
