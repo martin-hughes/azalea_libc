@@ -1,10 +1,13 @@
 #define _GNU_SOURCE
+#include <azalea/syscall.h>
 #include "pthread_impl.h"
 #include "stdio_impl.h"
 #include "libc.h"
 #include <sys/mman.h>
 #include <string.h>
 #include <stddef.h>
+
+#define SC_DEBUG_MSG(string) syscall_debug_output((string), strlen((string)) )
 
 void *__mmap(void *, size_t, int, int, int, off_t);
 int __munmap(void *, size_t);
@@ -21,8 +24,11 @@ weak_alias(dummy_0, __dl_thread_cleanup);
 
 _Noreturn void __pthread_exit(void *result)
 {
+	SC_DEBUG_MSG("pre exit\n");
 	pthread_t self = __pthread_self();
 	sigset_t set;
+
+	SC_DEBUG_MSG("Exit!\n");
 
 	self->canceldisable = 1;
 	self->cancelasync = 0;
@@ -47,7 +53,7 @@ _Noreturn void __pthread_exit(void *result)
 	 * This is important to ensure that dynamically allocated TLS
 	 * is not under-allocated/over-committed, and possibly for other
 	 * reasons as well. */
-	__block_all_sigs(&set);
+	/*__block_all_sigs(&set);*/
 
 	/* Wait to unlock the kill lock, which governs functions like
 	 * pthread_kill which target a thread id, until signals have
@@ -63,7 +69,7 @@ _Noreturn void __pthread_exit(void *result)
 	 * stdio cleanup code a consistent state. */
 	if (a_fetch_add(&libc.threads_minus_1, -1)==0) {
 		libc.threads_minus_1 = 0;
-		__restore_sigs(&set);
+		/*__restore_sigs(&set);*/
 		exit(0);
 	}
 
@@ -78,7 +84,7 @@ _Noreturn void __pthread_exit(void *result)
 		 * the case of threads that started out detached, the
 		 * initial clone flags are correct, but if the thread was
 		 * detached later (== 2), we need to clear it here. */
-		if (self->detached == 2) __syscall(SYS_set_tid_address, 0);
+		/* if (self->detached == 2) __syscall(SYS_set_tid_address, 0);*/
 
 		/* Since __unmapself bypasses the normal munmap code path,
 		 * explicitly wait for vmlock holders first. */
@@ -89,7 +95,7 @@ _Noreturn void __pthread_exit(void *result)
 		__unmapself(self->map_base, self->map_size);
 	}
 
-	for (;;) __syscall(SYS_exit, 0);
+	for (;;) syscall_exit_thread();
 }
 
 void __do_cleanup_push(struct __ptcb *cb)
@@ -112,17 +118,24 @@ static int start(void *p)
 	 * 1 = waiting for parent to do work
 	 * 2 = failure in parent, child must abort
 	 * 3 = success in parent, child must restore sigmask */
+	SC_DEBUG_MSG("Start fn\n");
 	if (self->startlock[0]) {
+		SC_DEBUG_MSG("Wait\n");
 		__wait(self->startlock, 0, 1, 1);
 		if (self->startlock[0] == 2) {
+			SC_DEBUG_MSG("Immediate exit\n");
 			self->detached = 2;
 			pthread_exit(0);
 		}
-		__restore_sigs(self->sigmask);
+		/*__restore_sigs(self->sigmask);*/
 	}
-	if (self->unblock_cancel)
+	SC_DEBUG_MSG("Wait complete\n");
+
+	__init_tp(self);
+
+	/*if (self->unblock_cancel)
 		__syscall(SYS_rt_sigprocmask, SIG_UNBLOCK,
-			SIGPT_SET, 0, _NSIG/8);
+			SIGPT_SET, 0, _NSIG/8);*/
 	__pthread_exit(self->start(self->start_arg));
 	return 0;
 }
@@ -170,6 +183,8 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 		| CLONE_PARENT_SETTID | CLONE_CHILD_CLEARTID | CLONE_DETACHED;
 	int do_sched = 0;
 	pthread_attr_t attr = { 0 };
+	ERR_CODE ec;
+	GEN_HANDLE new_thread;
 
 	if (!libc.can_do_threads) return ENOSYS;
 	self = __pthread_self();
@@ -180,7 +195,7 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 		init_file_lock(__stdin_used);
 		init_file_lock(__stdout_used);
 		init_file_lock(__stderr_used);
-		__syscall(SYS_rt_sigprocmask, SIG_UNBLOCK, SIGPT_SET, 0, _NSIG/8);
+		/*__syscall(SYS_rt_sigprocmask, SIG_UNBLOCK, SIGPT_SET, 0, _NSIG/8);*/
 		self->tsd = (void **)__pthread_tsd_main;
 		libc.threaded = 1;
 	}
@@ -195,6 +210,7 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 	if (__block_new_threads) __wait(&__block_new_threads, 0, 1, 1);
 
 	if (attr._a_stackaddr) {
+		SC_DEBUG_MSG("__pthread_create - 5\n");
 		size_t need = libc.tls_size + __pthread_tsd_size;
 		size = attr._a_stacksize;
 		stack = (void *)(attr._a_stackaddr & -16);
@@ -220,11 +236,11 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 		if (guard) {
 			map = __mmap(0, size, PROT_NONE, MAP_PRIVATE|MAP_ANON, -1, 0);
 			if (map == MAP_FAILED) goto fail;
-			if (__mprotect(map+guard, size-guard, PROT_READ|PROT_WRITE)
+			/*if (__mprotect(map+guard, size-guard, PROT_READ|PROT_WRITE)
 			    && errno != ENOSYS) {
 				__munmap(map, size);
 				goto fail;
-			}
+			}*/
 		} else {
 			map = __mmap(0, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANON, -1, 0);
 			if (map == MAP_FAILED) goto fail;
@@ -253,19 +269,30 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 	}
 	if (attr._a_sched) {
 		do_sched = new->startlock[0] = 1;
-		__block_app_sigs(new->sigmask);
+		/*__block_app_sigs(new->sigmask);*/
 	}
 	new->unblock_cancel = self->cancel;
 	new->CANARY = self->CANARY;
 
 	a_inc(&libc.threads_minus_1);
-	ret = __clone((c11 ? start_c11 : start), stack, flags, new, &new->tid, TP_ADJ(new), &new->tid);
+
+	ec = syscall_create_thread((c11 ? start_c11 : start), &new_thread, (unsigned long long)new, stack);
+	if ((ec != NO_ERROR) || (new_thread == 0))
+	{
+		ret = -EINVAL;
+	}
+	else
+	{
+		syscall_start_thread(new_thread);
+		ret = 0;
+	}
 
 	__release_ptc();
 
+  /*
 	if (do_sched) {
 		__restore_sigs(new->sigmask);
-	}
+	}*/
 
 	if (ret < 0) {
 		a_dec(&libc.threads_minus_1);
@@ -273,13 +300,14 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 		return EAGAIN;
 	}
 
+	/*
 	if (do_sched) {
 		ret = __syscall(SYS_sched_setscheduler, new->tid,
 			attr._a_policy, &attr._a_prio);
 		a_store(new->startlock, ret<0 ? 2 : 3);
 		__wake(new->startlock, 1, 1);
 		if (ret < 0) return -ret;
-	}
+	}*/
 
 	*res = new;
 	return 0;

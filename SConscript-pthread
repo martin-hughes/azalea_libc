@@ -1,14 +1,13 @@
 Import('libc_env')
 
 dependencies = [
-    #"src/thread/__futex.c", # System call
     "src/thread/__lock-kernel.c",
     #"src/thread/__lock.c", # In main C library.
     #"src/thread/__set_thread_area.c",
     #"src/thread/__syscall_cp.c", # All about system calls
-    #"src/thread/__timedwait.c", # Timing system call
+    "src/thread/__timedwait.c",
     "src/thread/__tls_get_addr.c",
-    #"src/thread/__unmapself.c", # System call
+    "src/thread/__unmapself.c",
     #"src/thread/__wait.c", # In main C library.
     "src/thread/call_once.c",
     "src/thread/clone.c",
@@ -49,13 +48,13 @@ dependencies = [
     "src/thread/pthread_cond_destroy.c",
     "src/thread/pthread_cond_init.c",
     "src/thread/pthread_cond_signal.c",
-    #"src/thread/pthread_cond_timedwait.c", # System calls
+    "src/thread/pthread_cond_timedwait.c",
     "src/thread/pthread_cond_wait.c",
     "src/thread/pthread_condattr_destroy.c",
     "src/thread/pthread_condattr_init.c",
     "src/thread/pthread_condattr_setclock.c",
     "src/thread/pthread_condattr_setpshared.c",
-    #"src/thread/pthread_create.c", # System calls
+    "src/thread/pthread_create.c",
     "src/thread/pthread_detach.c",
     "src/thread/pthread_equal.c",
     #"src/thread/pthread_getattr_np.c", #missing libc.auxv
@@ -73,7 +72,7 @@ dependencies = [
     "src/thread/pthread_mutex_lock.c",
     "src/thread/pthread_mutex_setprioceiling.c",
     "src/thread/pthread_mutex_timedlock.c",
-    #"src/thread/pthread_mutex_trylock.c", # Uses random system call
+    "src/thread/pthread_mutex_trylock.c",
     "src/thread/pthread_mutex_unlock.c",
     "src/thread/pthread_mutexattr_destroy.c",
     "src/thread/pthread_mutexattr_init.c",

@@ -1,8 +1,8 @@
+#include <azalea/azalea.h>
 #include <pthread.h>
 #include <time.h>
 #include <errno.h>
 #include "futex.h"
-#include "syscall.h"
 #include "pthread_impl.h"
 
 int __pthread_setcancelstate(int, int *);
@@ -12,7 +12,8 @@ int __timedwait_cp(volatile int *addr, int val,
 	clockid_t clk, const struct timespec *at, int priv)
 {
 	int r;
-	struct timespec to, *top=0;
+	struct timespec to;
+	uint64_t ns = 0;
 
 	if (priv) priv = FUTEX_PRIVATE;
 
@@ -25,11 +26,11 @@ int __timedwait_cp(volatile int *addr, int val,
 			to.tv_nsec += 1000000000;
 		}
 		if (to.tv_sec < 0) return ETIMEDOUT;
-		top = &to;
+
+		ns = to.tv_nsec + to.tv_sec * 1000000000ull;
 	}
 
-	r = -__syscall_cp(SYS_futex, addr, FUTEX_WAIT|priv, val, top);
-	if (r == ENOSYS) r = -__syscall_cp(SYS_futex, addr, FUTEX_WAIT, val, top);
+	r = -az_translate_error_code(syscall_futex_op(addr, FUTEX_WAIT, val, ns, 0, 0));
 	if (r != EINTR && r != ETIMEDOUT && r != ECANCELED) r = 0;
 
 	return r;
