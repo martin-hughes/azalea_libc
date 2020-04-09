@@ -17,7 +17,7 @@ int __init_tp(void *p)
 	if (r < 0) return -1;
 	if (!r) libc.can_do_threads = 1;
 	/*td->tid = __syscall(SYS_set_tid_address, &td->tid); */
-	td->tid = &td->tid;
+	td->tid = get_new_tid();
 	td->locale = &libc.global_locale;
 	return 0;
 }

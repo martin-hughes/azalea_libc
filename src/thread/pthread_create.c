@@ -12,6 +12,7 @@
 void *__mmap(void *, size_t, int, int, int, off_t);
 int __munmap(void *, size_t);
 int __mprotect(void *, size_t, int);
+int __init_tp(void *);
 
 static void dummy_0()
 {
@@ -96,6 +97,7 @@ _Noreturn void __pthread_exit(void *result)
 	}
 
 	/* The TID being set to zero is part of the check for termination in pthread_join */
+	release_tid(self->tid);
 	self->tid = 0;
 
 	for (;;) syscall_exit_thread();
@@ -267,7 +269,7 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 	new->tsd = (void *)tsd;
 	new->locale = &libc.global_locale;
 	/* This matches the dubious value set in __init_tls - which should change one day! */
-	new->tid = &new->tid;
+	new->tid = get_new_tid();
 	if (attr._a_detach) {
 		new->detached = 1;
 		flags -= CLONE_CHILD_CLEARTID;

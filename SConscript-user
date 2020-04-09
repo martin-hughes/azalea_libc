@@ -113,6 +113,7 @@ dependencies = [
     "src/thread/x86_64/__set_thread_area.cpp",
     "src/thread/__lock.c",
     "src/thread/__wait.c",
+    "src/thread/tid_manager.c",
 
     # This is all the files in the 'time' directory with the ones we don't support commented out.
     "src/time/__asctime.c",

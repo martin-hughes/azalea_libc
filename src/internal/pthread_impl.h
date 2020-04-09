@@ -9,6 +9,7 @@
 #include "libc.h"
 #include "atomic.h"
 #include "futex.h"
+#include <stdint.h>
 
 #define pthread __pthread
 
@@ -150,6 +151,9 @@ void __inhibit_ptc(void);
 void __block_all_sigs(void *);
 void __block_app_sigs(void *);
 void __restore_sigs(void *);
+
+int32_t get_new_tid();
+void release_tid(int32_t);
 
 #define DEFAULT_STACK_SIZE 81920
 #define DEFAULT_GUARD_SIZE 4096
