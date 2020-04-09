@@ -7,8 +7,6 @@
 #include <string.h>
 #include <stddef.h>
 
-#define SC_DEBUG_MSG(string) syscall_debug_output((string), strlen((string)) )
-
 void *__mmap(void *, size_t, int, int, int, off_t);
 int __munmap(void *, size_t);
 int __mprotect(void *, size_t, int);
@@ -25,11 +23,8 @@ weak_alias(dummy_0, __dl_thread_cleanup);
 
 _Noreturn void __pthread_exit(void *result)
 {
-	SC_DEBUG_MSG("pre exit\n");
 	pthread_t self = __pthread_self();
 	sigset_t set;
-
-	SC_DEBUG_MSG("Exit!\n");
 
 	self->canceldisable = 1;
 	self->cancelasync = 0;
@@ -123,18 +118,14 @@ static int start(void *p)
 	 * 1 = waiting for parent to do work
 	 * 2 = failure in parent, child must abort
 	 * 3 = success in parent, child must restore sigmask */
-	SC_DEBUG_MSG("Start fn\n");
 	if (self->startlock[0]) {
-		SC_DEBUG_MSG("Wait\n");
 		__wait(self->startlock, 0, 1, 1);
 		if (self->startlock[0] == 2) {
-			SC_DEBUG_MSG("Immediate exit\n");
 			self->detached = 2;
 			pthread_exit(0);
 		}
 		/*__restore_sigs(self->sigmask);*/
 	}
-	SC_DEBUG_MSG("Wait complete\n");
 
 	__init_tp(self);
 
@@ -215,7 +206,6 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 	if (__block_new_threads) __wait(&__block_new_threads, 0, 1, 1);
 
 	if (attr._a_stackaddr) {
-		SC_DEBUG_MSG("__pthread_create - 5\n");
 		size_t need = libc.tls_size + __pthread_tsd_size;
 		size = attr._a_stacksize;
 		stack = (void *)(attr._a_stackaddr & -16);
