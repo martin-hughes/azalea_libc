@@ -9,6 +9,7 @@
 #include "libc.h"
 #include "atomic.h"
 #include "futex.h"
+#include <stdint.h>
 
 #define pthread __pthread
 
@@ -35,11 +36,6 @@ struct pthread {
 	struct __ptcb *cancelbuf;
 	void **tsd;
 	volatile int dead;
-	struct {
-		volatile void *volatile head;
-		long off;
-		volatile void *volatile pending;
-	} robust_list;
 	int unblock_cancel;
 	volatile int timer_id;
 	locale_t locale;
@@ -75,8 +71,8 @@ struct __timer {
 #define _m_type __u.__i[0]
 #define _m_lock __u.__vi[1]
 #define _m_waiters __u.__vi[2]
-#define _m_prev __u.__p[3]
-#define _m_next __u.__p[4]
+/*#define _m_prev __u.__p[3]
+#define _m_next __u.__p[4]*/
 #define _m_count __u.__i[5]
 #define _c_shared __u.__p[0]
 #define _c_seq __u.__vi[2]
@@ -141,11 +137,11 @@ void __wait(volatile int *, volatile int *, int, int);
 /* Azalea deficiency: priv and cnt are ignored */
 static inline void __wake(volatile void *addr, int cnt, int priv)
 {
-	syscall_futex_wake((volatile int *)addr);
+	syscall_futex_op((volatile int *)addr, FUTEX_WAKE, 0, 0, 0, 0);
 }
 static inline void __futexwait(volatile void *addr, int val, int priv)
 {
-	syscall_futex_wait((volatile int *)addr, val);
+	syscall_futex_op((volatile int *)addr, FUTEX_WAIT, val, 0, 0, 0);
 }
 
 void __acquire_ptc(void);
@@ -155,6 +151,9 @@ void __inhibit_ptc(void);
 void __block_all_sigs(void *);
 void __block_app_sigs(void *);
 void __restore_sigs(void *);
+
+int32_t get_new_tid();
+void release_tid(int32_t);
 
 #define DEFAULT_STACK_SIZE 81920
 #define DEFAULT_GUARD_SIZE 4096

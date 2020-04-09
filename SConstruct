@@ -80,6 +80,10 @@ def main_build_script(vars):
   linux_shim_lib = StaticLibrary("output/azalea_libc/azalea_linux_shim", linux_shim_objects)
   core_env.Install(lib_obj_folder, linux_shim_lib)
 
+  pthread_objects = user_env.SConscript("#SConscript-pthread", {'libc_env' : user_env}, variant_dir='output', duplicate=0)
+  pthread_lib = StaticLibrary("output/azalea_libc/pthread", pthread_objects)
+  core_env.Install(lib_obj_folder, pthread_lib)
+
   headers = core_env.File(Glob("include/*.h"))
   core_env.Install(lib_include_folder, headers)
   core_env.Alias('install', lib_include_folder)

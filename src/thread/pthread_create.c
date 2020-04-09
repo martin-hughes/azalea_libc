@@ -1,4 +1,5 @@
 #define _GNU_SOURCE
+#include <azalea/syscall.h>
 #include "pthread_impl.h"
 #include "stdio_impl.h"
 #include "libc.h"
@@ -9,6 +10,7 @@
 void *__mmap(void *, size_t, int, int, int, off_t);
 int __munmap(void *, size_t);
 int __mprotect(void *, size_t, int);
+int __init_tp(void *);
 
 static void dummy_0()
 {
@@ -47,7 +49,7 @@ _Noreturn void __pthread_exit(void *result)
 	 * This is important to ensure that dynamically allocated TLS
 	 * is not under-allocated/over-committed, and possibly for other
 	 * reasons as well. */
-	__block_all_sigs(&set);
+	/*__block_all_sigs(&set);*/
 
 	/* Wait to unlock the kill lock, which governs functions like
 	 * pthread_kill which target a thread id, until signals have
@@ -63,28 +65,9 @@ _Noreturn void __pthread_exit(void *result)
 	 * stdio cleanup code a consistent state. */
 	if (a_fetch_add(&libc.threads_minus_1, -1)==0) {
 		libc.threads_minus_1 = 0;
-		__restore_sigs(&set);
+		/*__restore_sigs(&set);*/
 		exit(0);
 	}
-
-	/* Process robust list in userspace to handle non-pshared mutexes
-	 * and the detached thread case where the robust list head will
-	 * be invalid when the kernel would process it. */
-	__vm_lock();
-	volatile void *volatile *rp;
-	while ((rp=self->robust_list.head) && rp != &self->robust_list.head) {
-		pthread_mutex_t *m = (void *)((char *)rp
-			- offsetof(pthread_mutex_t, _m_next));
-		int waiters = m->_m_waiters;
-		int priv = (m->_m_type & 128) ^ 128;
-		self->robust_list.pending = rp;
-		self->robust_list.head = *rp;
-		int cont = a_swap(&m->_m_lock, 0x40000000);
-		self->robust_list.pending = 0;
-		if (cont < 0 || waiters)
-			__wake(&m->_m_lock, 1, priv);
-	}
-	__vm_unlock();
 
 	__do_orphaned_stdio_locks();
 	__dl_thread_cleanup();
@@ -97,12 +80,7 @@ _Noreturn void __pthread_exit(void *result)
 		 * the case of threads that started out detached, the
 		 * initial clone flags are correct, but if the thread was
 		 * detached later (== 2), we need to clear it here. */
-		if (self->detached == 2) __syscall(SYS_set_tid_address, 0);
-
-		/* Robust list will no longer be valid, and was already
-		 * processed above, so unregister it with the kernel. */
-		if (self->robust_list.off)
-			__syscall(SYS_set_robust_list, 0, 3*sizeof(long));
+		/* if (self->detached == 2) __syscall(SYS_set_tid_address, 0);*/
 
 		/* Since __unmapself bypasses the normal munmap code path,
 		 * explicitly wait for vmlock holders first. */
@@ -113,7 +91,11 @@ _Noreturn void __pthread_exit(void *result)
 		__unmapself(self->map_base, self->map_size);
 	}
 
-	for (;;) __syscall(SYS_exit, 0);
+	/* The TID being set to zero is part of the check for termination in pthread_join */
+	release_tid(self->tid);
+	self->tid = 0;
+
+	for (;;) syscall_exit_thread();
 }
 
 void __do_cleanup_push(struct __ptcb *cb)
@@ -142,11 +124,14 @@ static int start(void *p)
 			self->detached = 2;
 			pthread_exit(0);
 		}
-		__restore_sigs(self->sigmask);
+		/*__restore_sigs(self->sigmask);*/
 	}
-	if (self->unblock_cancel)
+
+	__init_tp(self);
+
+	/*if (self->unblock_cancel)
 		__syscall(SYS_rt_sigprocmask, SIG_UNBLOCK,
-			SIGPT_SET, 0, _NSIG/8);
+			SIGPT_SET, 0, _NSIG/8);*/
 	__pthread_exit(self->start(self->start_arg));
 	return 0;
 }
@@ -194,6 +179,8 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 		| CLONE_PARENT_SETTID | CLONE_CHILD_CLEARTID | CLONE_DETACHED;
 	int do_sched = 0;
 	pthread_attr_t attr = { 0 };
+	ERR_CODE ec;
+	GEN_HANDLE new_thread;
 
 	if (!libc.can_do_threads) return ENOSYS;
 	self = __pthread_self();
@@ -204,7 +191,7 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 		init_file_lock(__stdin_used);
 		init_file_lock(__stdout_used);
 		init_file_lock(__stderr_used);
-		__syscall(SYS_rt_sigprocmask, SIG_UNBLOCK, SIGPT_SET, 0, _NSIG/8);
+		/*__syscall(SYS_rt_sigprocmask, SIG_UNBLOCK, SIGPT_SET, 0, _NSIG/8);*/
 		self->tsd = (void **)__pthread_tsd_main;
 		libc.threaded = 1;
 	}
@@ -244,11 +231,11 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 		if (guard) {
 			map = __mmap(0, size, PROT_NONE, MAP_PRIVATE|MAP_ANON, -1, 0);
 			if (map == MAP_FAILED) goto fail;
-			if (__mprotect(map+guard, size-guard, PROT_READ|PROT_WRITE)
+			/*if (__mprotect(map+guard, size-guard, PROT_READ|PROT_WRITE)
 			    && errno != ENOSYS) {
 				__munmap(map, size);
 				goto fail;
-			}
+			}*/
 		} else {
 			map = __mmap(0, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANON, -1, 0);
 			if (map == MAP_FAILED) goto fail;
@@ -271,26 +258,38 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 	new->self = new;
 	new->tsd = (void *)tsd;
 	new->locale = &libc.global_locale;
+	/* This matches the dubious value set in __init_tls - which should change one day! */
+	new->tid = get_new_tid();
 	if (attr._a_detach) {
 		new->detached = 1;
 		flags -= CLONE_CHILD_CLEARTID;
 	}
 	if (attr._a_sched) {
 		do_sched = new->startlock[0] = 1;
-		__block_app_sigs(new->sigmask);
+		/*__block_app_sigs(new->sigmask);*/
 	}
-	new->robust_list.head = &new->robust_list.head;
 	new->unblock_cancel = self->cancel;
 	new->CANARY = self->CANARY;
 
 	a_inc(&libc.threads_minus_1);
-	ret = __clone((c11 ? start_c11 : start), stack, flags, new, &new->tid, TP_ADJ(new), &new->tid);
+
+	ec = syscall_create_thread((c11 ? start_c11 : start), &new_thread, (unsigned long long)new, stack);
+	if ((ec != NO_ERROR) || (new_thread == 0))
+	{
+		ret = -EINVAL;
+	}
+	else
+	{
+		syscall_start_thread(new_thread);
+		ret = 0;
+	}
 
 	__release_ptc();
 
+  /*
 	if (do_sched) {
 		__restore_sigs(new->sigmask);
-	}
+	}*/
 
 	if (ret < 0) {
 		a_dec(&libc.threads_minus_1);
@@ -298,13 +297,14 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 		return EAGAIN;
 	}
 
+	/*
 	if (do_sched) {
 		ret = __syscall(SYS_sched_setscheduler, new->tid,
 			attr._a_policy, &attr._a_prio);
 		a_store(new->startlock, ret<0 ? 2 : 3);
 		__wake(new->startlock, 1, 1);
 		if (ret < 0) return -ret;
-	}
+	}*/
 
 	*res = new;
 	return 0;

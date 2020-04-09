@@ -1,7 +1,7 @@
-/* Azalea-specific versino of __set_thread_area.
+/* Azalea-specific version of __set_thread_area.
  *
  * Copyright Martin Hughes 2018.
- * Licenced under standard MIT licence. See COPYRIGHT for details.
+ * Licensed under standard MIT licence. See COPYRIGHT for details.
  *
  * It's not ideal to have a C++ compiled file in a C library I guess, but it saves me a bit of work until I make C-
  * compatible header files.

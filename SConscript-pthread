@@ -1,0 +1,139 @@
+Import('libc_env')
+
+dependencies = [
+    "src/thread/__lock-kernel.c",
+    #"src/thread/__lock.c", # In main C library.
+    #"src/thread/__set_thread_area.c",
+    #"src/thread/__syscall_cp.c", # All about system calls
+    "src/thread/__timedwait.c",
+    "src/thread/__tls_get_addr.c",
+    "src/thread/__unmapself.c",
+    #"src/thread/__wait.c", # In main C library.
+    "src/thread/call_once.c",
+    "src/thread/clone.c",
+    "src/thread/cnd_broadcast.c",
+    "src/thread/cnd_destroy.c",
+    "src/thread/cnd_init.c",
+    "src/thread/cnd_signal.c",
+    "src/thread/cnd_timedwait.c",
+    "src/thread/cnd_wait.c",
+    "src/thread/lock_ptc.c",
+    "src/thread/mtx_destroy.c",
+    "src/thread/mtx_init.c",
+    "src/thread/mtx_lock.c",
+    "src/thread/mtx_timedlock.c",
+    "src/thread/mtx_trylock.c",
+    "src/thread/mtx_unlock.c",
+    #"src/thread/pthread_atfork.c", # FORK not supported in Azalea
+    "src/thread/pthread_attr_destroy.c",
+    "src/thread/pthread_attr_get.c",
+    "src/thread/pthread_attr_init.c",
+    "src/thread/pthread_attr_setdetachstate.c",
+    "src/thread/pthread_attr_setguardsize.c",
+    "src/thread/pthread_attr_setinheritsched.c",
+    "src/thread/pthread_attr_setschedparam.c",
+    "src/thread/pthread_attr_setschedpolicy.c",
+    "src/thread/pthread_attr_setscope.c",
+    "src/thread/pthread_attr_setstack.c",
+    "src/thread/pthread_attr_setstacksize.c",
+    "src/thread/pthread_barrier_destroy.c",
+    "src/thread/pthread_barrier_init.c",
+    #"src/thread/pthread_barrier_wait.c", # System calls
+    "src/thread/pthread_barrierattr_destroy.c",
+    "src/thread/pthread_barrierattr_init.c",
+    "src/thread/pthread_barrierattr_setpshared.c",
+    #"src/thread/pthread_cancel.c", # Some system calls involved
+    "src/thread/pthread_cleanup_push.c",
+    "src/thread/pthread_cond_broadcast.c",
+    "src/thread/pthread_cond_destroy.c",
+    "src/thread/pthread_cond_init.c",
+    "src/thread/pthread_cond_signal.c",
+    "src/thread/pthread_cond_timedwait.c",
+    "src/thread/pthread_cond_wait.c",
+    "src/thread/pthread_condattr_destroy.c",
+    "src/thread/pthread_condattr_init.c",
+    "src/thread/pthread_condattr_setclock.c",
+    "src/thread/pthread_condattr_setpshared.c",
+    "src/thread/pthread_create.c",
+    "src/thread/pthread_detach.c",
+    "src/thread/pthread_equal.c",
+    #"src/thread/pthread_getattr_np.c", #missing libc.auxv
+    "src/thread/pthread_getconcurrency.c",
+    "src/thread/pthread_getcpuclockid.c",
+    #"src/thread/pthread_getschedparam.c", # System calls
+    "src/thread/pthread_getspecific.c",
+    "src/thread/pthread_join.c",
+    "src/thread/pthread_key_create.c",
+    #"src/thread/pthread_kill.c", # System calls
+    "src/thread/pthread_mutex_consistent.c",
+    "src/thread/pthread_mutex_destroy.c",
+    "src/thread/pthread_mutex_getprioceiling.c",
+    "src/thread/pthread_mutex_init.c",
+    "src/thread/pthread_mutex_lock.c",
+    "src/thread/pthread_mutex_setprioceiling.c",
+    "src/thread/pthread_mutex_timedlock.c",
+    "src/thread/pthread_mutex_trylock.c",
+    "src/thread/pthread_mutex_unlock.c",
+    "src/thread/pthread_mutexattr_destroy.c",
+    "src/thread/pthread_mutexattr_init.c",
+    "src/thread/pthread_mutexattr_setprotocol.c",
+    "src/thread/pthread_mutexattr_setpshared.c",
+    "src/thread/pthread_mutexattr_setrobust.c",
+    "src/thread/pthread_mutexattr_settype.c",
+    "src/thread/pthread_once.c",
+    "src/thread/pthread_rwlock_destroy.c",
+    "src/thread/pthread_rwlock_init.c",
+    "src/thread/pthread_rwlock_rdlock.c",
+    "src/thread/pthread_rwlock_timedrdlock.c",
+    "src/thread/pthread_rwlock_timedwrlock.c",
+    "src/thread/pthread_rwlock_tryrdlock.c",
+    "src/thread/pthread_rwlock_trywrlock.c",
+    "src/thread/pthread_rwlock_unlock.c",
+    "src/thread/pthread_rwlock_wrlock.c",
+    "src/thread/pthread_rwlockattr_destroy.c",
+    "src/thread/pthread_rwlockattr_init.c",
+    "src/thread/pthread_rwlockattr_setpshared.c",
+    "src/thread/pthread_self.c",
+    "src/thread/pthread_setattr_default_np.c",
+    "src/thread/pthread_setcancelstate.c",
+    "src/thread/pthread_setcanceltype.c",
+    "src/thread/pthread_setconcurrency.c",
+    "src/thread/pthread_setname_np.c",
+    #"src/thread/pthread_setschedparam.c", # System calls
+    #"src/thread/pthread_setschedprio.c", # System calls
+    "src/thread/pthread_setspecific.c",
+    #"src/thread/pthread_sigmask.c", # Azalea doesn't support signals
+    "src/thread/pthread_spin_destroy.c",
+    "src/thread/pthread_spin_init.c",
+    "src/thread/pthread_spin_lock.c",
+    "src/thread/pthread_spin_trylock.c",
+    "src/thread/pthread_spin_unlock.c",
+    "src/thread/pthread_testcancel.c",
+    #"src/thread/sem_destroy.c", # Linux style semaphores
+    #"src/thread/sem_getvalue.c", # Linux style semaphores
+    #"src/thread/sem_init.c", # Linux style semaphores
+    #"src/thread/sem_open.c", # Linux style semaphores
+    #"src/thread/sem_post.c", # Linux style semaphores
+    #"src/thread/sem_timedwait.c", # Linux style semaphores
+    #"src/thread/sem_trywait.c", # Linux style semaphores
+    #"src/thread/sem_unlink.c", # Linux style semaphores
+    #"src/thread/sem_wait.c", # Linux style semaphores
+    #"src/thread/synccall.c", # Linux style semaphores
+    "src/thread/syscall_cp.c",
+    "src/thread/thrd_create.c",
+    "src/thread/thrd_exit.c",
+    "src/thread/thrd_join.c",
+    #"src/thread/thrd_sleep.c", # System call
+    #"src/thread/thrd_yield.c", # System call
+    "src/thread/tls.c",
+    "src/thread/tss_create.c",
+    "src/thread/tss_delete.c",
+    "src/thread/tss_set.c",
+    "src/thread/vmlock.c",
+  ]
+
+lib_obj = [ ]
+for f in dependencies:
+  lib_obj = lib_obj + [ libc_env.Object(f) ]
+
+Return ('lib_obj')

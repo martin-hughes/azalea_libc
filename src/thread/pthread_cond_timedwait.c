@@ -1,3 +1,4 @@
+#include <azalea/azalea.h>
 #include "pthread_impl.h"
 
 void __pthread_testcancel(void);
@@ -54,8 +55,7 @@ static inline void unlock_requeue(volatile int *l, volatile int *r, int w)
 {
 	a_store(l, 0);
 	if (w) __wake(l, 1, 1);
-	else __syscall(SYS_futex, l, FUTEX_REQUEUE|FUTEX_PRIVATE, 0, 1, r) != -ENOSYS
-		|| __syscall(SYS_futex, l, FUTEX_REQUEUE, 0, 1, r);
+	else syscall_futex_op(l, FUTEX_REQUEUE, 0, 0, r, 1);
 }
 
 enum {
@@ -126,12 +126,12 @@ int __pthread_cond_timedwait(pthread_cond_t *restrict c, pthread_mutex_t *restri
 		 * via the futex notify below. */
 
 		lock(&c->_c_lock);
-		
+
 		if (c->_c_head == &node) c->_c_head = node.next;
 		else if (node.prev) node.prev->next = node.next;
 		if (c->_c_tail == &node) c->_c_tail = node.prev;
 		else if (node.next) node.next->prev = node.prev;
-		
+
 		unlock(&c->_c_lock);
 
 		if (node.notify) {
