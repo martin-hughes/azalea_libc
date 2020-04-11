@@ -75,7 +75,7 @@ Completed | No | stdnoreturn.h | No changes from musl version. Only a single mac
 Completed | No | string.h | Ported but not fully tested
 Completed | No | tgmath.h | Untested. I think this is simply a set of macro definitions around math.h and complex.h
 not started | No | threads.h | Plenty of work, although largely I think it's a case of swapping syscalls - and extending the Azalea calls that are available.
-incomplete | No | time.h | Most functions work, but sleeping does not, not does setting timers. Other minor omissions too.
+incomplete | No | time.h | Most functions work, but setting timers does not. Other minor omissions too.
 not started | No | uchar.h | Looks like not too much work.
 not started | No | wchar.h | Could be quite a lot of work.
 not started | No | wctype.h | Oughtn't be too bad.
@@ -84,9 +84,11 @@ not started | No | wctype.h | Oughtn't be too bad.
 
 Status | Tested? | File name | Notes
 -------|---------|-----------|-------
-incomplete | No | unistd.h | It's highly recommended to avoid using this header. Most of the supported functions have been quickly hacked together and probably don't work correctly. Frankly a bit of a mess.
 incomplete | No | getopt.h | Should just work.
-incomplete | No | termios.h | Some pretty minimal work has been completed - tc(set|set)attr are implemented but only support a trivial set of flags.
+incomplete | NO! | pthread.h | Large chunks of the pthread library compile, but they really aren't tested and could expose some comical bugs.
+completed | No | regex.h | Seems to compile cleanly with no changes, but is completely untested.
+incomplete | No | termios.h | Some pretty minimal work has been completed - tc(get|set)attr are implemented but only support a trivial set of flags.
+incomplete | No | unistd.h | It's highly recommended to avoid using this header. Most of the supported functions have been quickly hacked together and probably don't work correctly. Frankly a bit of a mess.
 
 No deliberate progress has been made on any of the following headers.
 
@@ -124,7 +126,6 @@ No deliberate progress has been made on any of the following headers.
 - nl_types.h
 - paths.h
 - poll.h
-- pthread.h
 - pty.h
 - pwd.h
 - regex.h
