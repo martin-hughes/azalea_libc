@@ -30,9 +30,9 @@ been fully ported to Azalea.
 - There are a whole load of warnings generated.
 - File mode flags are basically unsupported.
 - mmap only maps, it doesn't look at any of the flags or other nice features. It also can't memory map files!
-- errno is per-process, not per-thread!
-- There is no support for pthread, which means some locks are not valid - there are places in the code marked with
-  /* PTHREAD where locking code has been commented out.
+- In the kernel build, errno is shared amongst all threads (in user builds, it is per-thread)
+- There is incomplete support for pthread, which means some locks are not valid - there are places in the code marked
+  with /* PTHREAD where locking code has been commented out.
 
 ## Minor deficiencies
 
