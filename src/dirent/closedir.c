@@ -3,9 +3,11 @@
 #include "__dirent.h"
 #include "libc.h"
 
+#include <azalea/azalea.h>
+
 int closedir(DIR *dir)
 {
-	int ret = close(dir->fd);
+	syscall_close_handle(dir->dir_handle);
 	free(dir);
-	return ret;
+	return 0;
 }

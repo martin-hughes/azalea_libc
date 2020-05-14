@@ -22,7 +22,7 @@ this project will try to use the name "Azalea libc" so far as possible.
 
 ## Multiple output libraries
 
-Azalea libc actually builds three different libraries:
+Azalea libc actually builds four different libraries:
 - azalea_libc - This is the main C library, containing all supported
   functionality except for the stuff in azalea_linux_shim. You probably want to
   use this one for most projects.
@@ -31,6 +31,8 @@ Azalea libc actually builds three different libraries:
   library cannot use system calls, for example.
 - azalea_linux_shim - This implements (badly, mostly) some Linux system calls
   commonly used within the library or common Linux applications.
+- pthread - Currently, pthread functions compile into a separate library. In
+  future they may be contained within the user version of the library.
 
 # musl libc
 

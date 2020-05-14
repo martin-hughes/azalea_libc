@@ -9,7 +9,7 @@ int readdir_r(DIR *restrict dir, struct dirent *restrict buf, struct dirent **re
 	struct dirent *de;
 	int errno_save = errno;
 	int ret;
-	
+
 	LOCK(dir->lock);
 	errno = 0;
 	de = readdir(dir);
@@ -18,7 +18,7 @@ int readdir_r(DIR *restrict dir, struct dirent *restrict buf, struct dirent **re
 		return ret;
 	}
 	errno = errno_save;
-	if (de) memcpy(buf, de, de->d_reclen);
+	if (de) memcpy(buf, de, sizeof(struct dirent));
 	else buf = NULL;
 
 	UNLOCK(dir->lock);

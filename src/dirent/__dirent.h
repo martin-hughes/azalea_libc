@@ -1,9 +1,10 @@
+#include <azalea/kernel_types.h>
+
 struct __dirstream
 {
-	int fd;
-	off_t tell;
-	int buf_pos;
-	int buf_end;
-	volatile int lock[1];
-	char buf[2048];
+  GEN_HANDLE dir_handle;
+  volatile int lock[1];
+  uint64_t location; /* Location within directory stream */
+  struct dirent last_entry; /* Entry returned by readdir() */
+  char last_name[2048]; /* Last name returned by readdir() */
 };

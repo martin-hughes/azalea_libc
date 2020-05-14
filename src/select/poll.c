@@ -9,6 +9,7 @@
 int poll(struct pollfd *fds, nfds_t n, int timeout)
 {
 	ERR_CODE ec;
+
 	/* Azalea can only cope with waiting for one object at a time */
 	if (n != 1)
 	{
@@ -22,7 +23,8 @@ int poll(struct pollfd *fds, nfds_t n, int timeout)
 	}
 
 	/* Nothing to wait for. */
-	if (fds[0].fd < 0)
+	if ((fds[0].fd < 0) ||
+			(syscall_wait_for_object(fds[0].fd, timeout) == TIMED_OUT))
 	{
 		return 0;
 	}

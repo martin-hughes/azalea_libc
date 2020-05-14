@@ -5,6 +5,18 @@ dependencies = [
 
     Glob("src/complex/*.c"),
 
+    "src/dirent/alphasort.c",
+    "src/dirent/closedir.c",
+    #"src/dirent/fdopendir.c",
+    "src/dirent/opendir.c",
+    "src/dirent/readdir_r.c",
+    "src/dirent/readdir.c",
+    "src/dirent/rewinddir.c",
+    #"src/dirent/scandir.c",
+    #"src/dirent/seekdir.c",
+    "src/dirent/telldir.c",
+    "src/dirent/versionsort.c",
+
     "src/env/__environ.c",
     "src/env/__init_tls.c",
     "src/env/__libc_start_main.c",
@@ -42,6 +54,7 @@ dependencies = [
     Glob("src/math/x86_64/*.s"),
 
     #These probably shouldn't be part of libc...
+    "src/misc/dirname.c",
     "src/misc/getopt.c",
     "src/misc/getopt_long.c",
     "src/misc/ioctl.c",
@@ -86,6 +99,7 @@ dependencies = [
     "src/stdio/fwide.c",
     "src/stdio/funlockfile.c",
     "src/stdio/getc.c",
+    "src/stdio/getc_unlocked.c",
     "src/stdio/getchar.c",
     "src/stdio/getchar_unlocked.c",
     "src/stdio/getdelim.c",
@@ -112,6 +126,8 @@ dependencies = [
     "src/stdio/vsscanf.c",
     "src/stdio/vsprintf.c",
     "src/stdio/vswprintf.c",
+
+    Glob("src/temp/*.c"),
 
     "src/thread/x86_64/__set_thread_area.cpp",
     "src/thread/__lock.c",

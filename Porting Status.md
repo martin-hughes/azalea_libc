@@ -84,6 +84,7 @@ not started | No | wctype.h | Oughtn't be too bad.
 
 Status | Tested? | File name | Notes
 -------|---------|-----------|-------
+incomplete | No | dirent.h | Most functions are translated, a couple remain.
 incomplete | No | getopt.h | Should just work.
 incomplete | NO! | pthread.h | Large chunks of the pthread library compile, but they really aren't tested and could expose some comical bugs.
 completed | No | regex.h | Seems to compile cleanly with no changes, but is completely untested.
@@ -98,7 +99,6 @@ No deliberate progress has been made on any of the following headers.
 - byteswap.h
 - cpio.h
 - crypt.h
-- dirent.h
 - dlfcn.h
 - elf.h
 - endian.h
