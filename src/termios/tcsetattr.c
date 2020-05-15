@@ -43,6 +43,11 @@ int tcsetattr(int fd, int act, const struct termios *tio)
 		azalea_tco.input_return_is_newline = true;
 	}
 
+	if ((tio->c_iflag & INLCR) != 0)
+	{
+		azalea_tco.input_newline_is_return = true;
+	}
+
 	if (syscall_send_message(fd, SM_SET_OPTIONS, sizeof(azalea_tco), (char *)(&azalea_tco), NULL) != NO_ERROR)
 	{
 		errno = EFAULT;
