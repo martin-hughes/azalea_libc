@@ -13,6 +13,8 @@ dependencies = [
     "src/math/frexpl.c",
     "src/math/scalbn.c",
     "src/math/scalbnl.c",
+
+    "src/stdio/swprintf-kernel.cpp",
   ]
 
 lib_obj = [ ]
