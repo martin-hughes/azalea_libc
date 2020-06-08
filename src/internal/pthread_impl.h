@@ -135,13 +135,20 @@ int __timedwait_cp(volatile int *, int, clockid_t, const struct timespec *, int)
 void __wait(volatile int *, volatile int *, int, int);
 
 /* Azalea deficiency: priv and cnt are ignored */
+/* These are only defined outside of the kernel, since the only times they're called inside the kernel relate to the
+   use of functions like vfprintf, that are themselves only used in situations where threading is an issue. Therefore
+	 it's reasonable to just leave them blank. */
 static inline void __wake(volatile void *addr, int cnt, int priv)
 {
+#ifndef __AZ_KERNEL__
 	syscall_futex_op((volatile int *)addr, FUTEX_WAKE, 0, 0, 0, 0);
+#endif
 }
 static inline void __futexwait(volatile void *addr, int val, int priv)
 {
+#ifndef __AZ_KERNEL__
 	syscall_futex_op((volatile int *)addr, FUTEX_WAIT, val, 0, 0, 0);
+#endif
 }
 
 void __acquire_ptc(void);

@@ -21,6 +21,7 @@ shared_flags_list = [
 kernel_extra_flags_list = [
   '-fno-exceptions',
   '-funwind-tables',
+  '-D __AZ_KERNEL__',
 ]
 
 kernel_cxx_flags_list = [
