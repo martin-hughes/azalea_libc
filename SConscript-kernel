@@ -1,6 +1,8 @@
 Import('libc_env')
 
 dependencies = [
+    "src/exit/atexit-kernel.c",
+
     "src/thread/__lock-kernel.c",
 
     "src/math/__fpclassify.c",
