@@ -77,7 +77,7 @@ void *__mremap(void *old_addr, size_t old_len, size_t new_len, int flags, ...)
 
 	if (new_pages - old_pages > 0)
 	{
-		ec = syscall_allocate_backing_memory((new_pages - old_pages), (void **)&cur_map_addr);
+		ec = az_allocate_backing_memory((new_pages - old_pages), (void **)&cur_map_addr);
 
 		switch(ec)
 		{

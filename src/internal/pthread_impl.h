@@ -141,13 +141,13 @@ void __wait(volatile int *, volatile int *, int, int);
 static inline void __wake(volatile void *addr, int cnt, int priv)
 {
 #ifndef __AZ_KERNEL__
-	syscall_futex_op((volatile int *)addr, FUTEX_WAKE, 0, 0, 0, 0);
+	az_futex_op((volatile int *)addr, FUTEX_WAKE, 0, 0, 0, 0);
 #endif
 }
 static inline void __futexwait(volatile void *addr, int val, int priv)
 {
 #ifndef __AZ_KERNEL__
-	syscall_futex_op((volatile int *)addr, FUTEX_WAIT, val, 0, 0, 0);
+	az_futex_op((volatile int *)addr, FUTEX_WAIT, val, 0, 0, 0);
 #endif
 }
 

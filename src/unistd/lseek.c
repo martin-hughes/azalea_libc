@@ -29,7 +29,7 @@ off_t lseek(int fd, off_t offset, int whence)
 		break;
 	}
 
-	syscall_seek_handle(fd, offset, off_d, &new_off);
+	az_seek_handle(fd, offset, off_d, &new_off);
 
 	return new_off;
 }

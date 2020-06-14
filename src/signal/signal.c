@@ -7,7 +7,7 @@ int __sigaction(int, const struct sigaction *, struct sigaction *);
 void (*signal(int sig, void (*func)(int)))(int)
 {
 	/* Azalea doesn't presently support signal handlers, but it will do in future */
-	syscall_debug_output("WARNING: signal() called\n", 25);
+	az_debug_output("WARNING: signal() called\n", 25);
 /*	struct sigaction sa_old, sa = { .sa_handler = func, .sa_flags = SA_RESTART };
 	if (__sigaction(sig, &sa, &sa_old) < 0)
 		return SIG_ERR;

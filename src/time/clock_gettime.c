@@ -57,7 +57,7 @@ int __clock_gettime(clockid_t clk, struct timespec *ts)
 	}
 	else
 	{
-		e = syscall_get_system_clock(&t);
+		e = az_get_system_clock(&t);
 		if (e != NO_ERROR)
 		{
 			r = -ENOSYS;

@@ -30,7 +30,7 @@ off_t __stdio_seek(FILE *f, off_t off, int whence)
 
 	if ((f->flags & F_ERR) == 0)
 	{
-		if (syscall_seek_handle(f->fd, off, off_d, &new_off) != NO_ERROR)
+		if (az_seek_handle(f->fd, off, off_d, &new_off) != NO_ERROR)
 		{
 			f->flags |= F_ERR;
 		}

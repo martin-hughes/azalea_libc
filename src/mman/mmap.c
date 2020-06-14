@@ -42,7 +42,7 @@ void *__mmap(void *start, size_t len, int prot, int flags, int fd, off_t off)
 		return MAP_FAILED;
 	}
 
-	ec = syscall_allocate_backing_memory(pages, (void **)&start_page);
+	ec = az_allocate_backing_memory(pages, (void **)&start_page);
 	if (ec != NO_ERROR)
 	{
 		switch(ec)

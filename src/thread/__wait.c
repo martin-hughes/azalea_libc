@@ -12,7 +12,7 @@ void __wait(volatile int *addr, volatile int *waiters, int val, int priv)
 	}
 	if (waiters) a_inc(waiters);
 	while (*addr==val) {
-		syscall_futex_op(addr, FUTEX_WAKE, val, 0, 0, 0);
+		az_futex_op(addr, FUTEX_WAKE, val, 0, 0, 0);
 	}
 	if (waiters) a_dec(waiters);
 }

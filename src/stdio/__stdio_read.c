@@ -18,7 +18,7 @@ size_t __stdio_read(FILE *f, unsigned char *buf, size_t len)
 
 	if (iov[0].iov_len)
 	{
-		ec = syscall_read_handle(f->fd, 0, len, iov[0].iov_base, iov[0].iov_len, (unsigned long *)&cnt_0);
+		ec = az_read_handle(f->fd, 0, len, iov[0].iov_base, iov[0].iov_len, (unsigned long *)&cnt_0);
 	}
 
 	/*
@@ -27,7 +27,7 @@ size_t __stdio_read(FILE *f, unsigned char *buf, size_t len)
 	 */
 	if ((ec == NO_ERROR) || (ec == INVALID_PARAM))
 	{
-		ec = syscall_read_handle(f->fd, 0, len, iov[1].iov_base, iov[1].iov_len, (unsigned long *)&cnt);
+		ec = az_read_handle(f->fd, 0, len, iov[1].iov_base, iov[1].iov_len, (unsigned long *)&cnt);
 		cnt += cnt_0;
 	}
 

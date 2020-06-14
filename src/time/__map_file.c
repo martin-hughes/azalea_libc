@@ -27,21 +27,21 @@ const char unsigned *__map_file(const char *pathname, size_t *size)
 	}
 	__syscall(SYS_close, fd);*/
 
-	ec = syscall_open_handle(pathname, strlen(pathname), &map_file_handle, 0);
+	ec = az_open_handle(pathname, strlen(pathname), &map_file_handle, 0);
 	if (ec == NO_ERROR)
 	{
-		ec = syscall_get_handle_data_len(map_file_handle, &bytes);
+		ec = az_get_handle_data_len(map_file_handle, &bytes);
 		if (ec == NO_ERROR)
 		{
 			map = malloc(bytes);
-			ec = syscall_read_handle(map_file_handle, 0, bytes, map, bytes, &br);
+			ec = az_read_handle(map_file_handle, 0, bytes, map, bytes, &br);
 			if ((ec != NO_ERROR) || (br != bytes))
 			{
 				free(map);
 				map = MAP_FAILED;
 			}
 		}
-		syscall_close_handle(map_file_handle);
+		az_close_handle(map_file_handle);
 	}
 
 	return map == MAP_FAILED ? 0 : map;

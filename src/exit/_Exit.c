@@ -3,6 +3,6 @@
 
 _Noreturn void _Exit(int ec)
 {
-	syscall_exit_process(ec);
-	for (;;) syscall_exit_process(ec);
+	az_exit_process(ec);
+	for (;;) az_exit_process(ec);
 }

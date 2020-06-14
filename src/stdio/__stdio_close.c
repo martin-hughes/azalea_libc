@@ -12,7 +12,7 @@ weak_alias(dummy, __aio_close);
 int __stdio_close(FILE *f)
 {
 	ERR_CODE ec;
-	ec = syscall_close_handle(__aio_close(f->fd));
+	ec = az_close_handle(__aio_close(f->fd));
 
 	return ec == NO_ERROR ? 0 : -1;
 }

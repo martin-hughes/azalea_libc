@@ -33,7 +33,7 @@ FILE *fopen(const char *restrict filename, const char *restrict mode)
 		kernel_flags = H_CREATE_IF_NEW;
 	}
 
-	ec = syscall_open_handle(filename, strlen(filename), &fd, kernel_flags);
+	ec = az_open_handle(filename, strlen(filename), &fd, kernel_flags);
 	if (ec != NO_ERROR)
 	{
 		return 0;
@@ -46,7 +46,7 @@ FILE *fopen(const char *restrict filename, const char *restrict mode)
 	}
 	else
 	{
-		syscall_close_handle(fd);
+		az_close_handle(fd);
 	}
 
 	return 0;

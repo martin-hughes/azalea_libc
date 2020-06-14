@@ -12,7 +12,7 @@ int ioctl(int fd, int req, ...)
 	va_end(ap);
 
 	/* Azalea doesn't presently support the iotcl() call, but will do one day */
-	syscall_debug_output("WARNING: ioctl() called\n", 24);
+	az_debug_output("WARNING: ioctl() called\n", 24);
 	abort();
 	/*return syscall(SYS_ioctl, fd, req, arg);*/
 }

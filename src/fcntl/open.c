@@ -34,19 +34,19 @@ int open(const char *filename, int flags, ...)
 	{
 		syscall_flags = H_CREATE_IF_NEW;
 	}
-	ec = syscall_open_handle(filename, strlen(filename), &h, syscall_flags);
+	ec = az_open_handle(filename, strlen(filename), &h, syscall_flags);
 
 	if (ec == NO_ERROR)
 	{
 		if (flags & O_CREAT)
 		{
 			/* O_CREAT basically requests the file length be set to zero. What should we do if this fails? */
-			syscall_set_handle_data_len(h, 0);
+			az_set_handle_data_len(h, 0);
 		}
 		else if (flags & O_APPEND)
 		{
-			ec = syscall_get_handle_data_len(h, &file_len);
-			syscall_seek_handle(h, file_len, FROM_START, NULL);
+			ec = az_get_handle_data_len(h, &file_len);
+			az_seek_handle(h, file_len, FROM_START, NULL);
 		}
 	}
 	else

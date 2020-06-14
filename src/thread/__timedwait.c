@@ -30,7 +30,7 @@ int __timedwait_cp(volatile int *addr, int val,
 		ns = to.tv_nsec + to.tv_sec * 1000000000ull;
 	}
 
-	r = -az_translate_error_code(syscall_futex_op(addr, FUTEX_WAIT, val, ns, 0, 0));
+	r = -az_translate_error_code(az_futex_op(addr, FUTEX_WAIT, val, ns, 0, 0));
 	if (r != EINTR && r != ETIMEDOUT && r != ECANCELED) r = 0;
 
 	return r;

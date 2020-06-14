@@ -15,7 +15,7 @@ int close(int fd)
 {
 	ERR_CODE ec = NO_ERROR;
 
-	ec = syscall_close_handle(fd);
+	ec = az_close_handle(fd);
 
 	return ((ec == NO_ERROR) ? 0 : EIO);
 }

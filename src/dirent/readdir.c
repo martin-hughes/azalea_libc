@@ -18,7 +18,7 @@ struct dirent *readdir(DIR *dir)
   char **ptr_table = (char **)(buffer);
 
   if (dir &&
-     (syscall_enum_children(dir->dir_handle, dir->last_name, strlen(dir->last_name), 1, buffer, &buf_size) !=NO_ERROR))
+     (az_enum_children(dir->dir_handle, dir->last_name, strlen(dir->last_name), 1, buffer, &buf_size) !=NO_ERROR))
   {
     if (ptr_table[0] != NULL)
     {

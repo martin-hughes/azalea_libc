@@ -3,6 +3,6 @@
 
 int sched_yield()
 {
-	syscall_yield();
+	az_yield();
 	return 0;
 }

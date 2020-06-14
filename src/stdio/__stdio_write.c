@@ -24,7 +24,7 @@ size_t __stdio_write(FILE *f, const unsigned char *buf, size_t len)
 		{
 			if ((iov[i].iov_base != NULL) && (iov[i].iov_len != 0))
 			{
-				ec = syscall_write_handle(f->fd,
+				ec = az_write_handle(f->fd,
 																	0,
 																	iov[i].iov_len,
 																	iov[i].iov_base,

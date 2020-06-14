@@ -28,7 +28,7 @@ int __munmap(void *start, size_t len)
 	}
 
 	/* Azalea deficiency - this will just release the whole lot! */
-	ec = syscall_release_backing_memory((void *)start_page);
+	ec = az_release_backing_memory((void *)start_page);
 
 	switch(ec)
 	{

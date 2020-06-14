@@ -24,7 +24,7 @@ int poll(struct pollfd *fds, nfds_t n, int timeout)
 
 	/* Nothing to wait for. */
 	if ((fds[0].fd < 0) ||
-			(syscall_wait_for_object(fds[0].fd, timeout) == TIMED_OUT))
+			(az_wait_for_object(fds[0].fd, timeout) == TIMED_OUT))
 	{
 		return 0;
 	}

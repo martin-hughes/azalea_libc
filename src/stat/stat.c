@@ -35,7 +35,7 @@ int stat(const char *restrict path, struct stat *restrict buf)
 	buf->st_blksize = 0;
 	buf->st_blocks = 0;
 
-	ec = syscall_get_object_properties(0, path, strlen(path), &props);
+	ec = az_get_object_properties(0, path, strlen(path), &props);
 	if (ec == NOT_FOUND)
 	{
 		errno = ENOENT;
@@ -50,13 +50,13 @@ int stat(const char *restrict path, struct stat *restrict buf)
 	if (props.is_file)
 	{
 		/* Don't worry too much about errors here - if an error occurs getting the file size, just return 0. */
-		syscall_open_handle(path, strlen(path), &h, 0);
-		ec = syscall_get_handle_data_len(h, &size);
+		az_open_handle(path, strlen(path), &h, 0);
+		ec = az_get_handle_data_len(h, &size);
 		if (ec == NO_ERROR)
 		{
 			buf->st_size = (off_t)size;
 		}
-		syscall_close_handle(h);
+		az_close_handle(h);
 		buf->st_mode = S_IFREG | 0777;
 	}
 	else if (!props.is_leaf)

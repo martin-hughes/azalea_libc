@@ -13,7 +13,7 @@ DIR *opendir(const char *name)
   DIR *dir;
   struct object_properties props;
 
-  if (syscall_open_handle(name, strlen(name), &dir_h, 0) != NO_ERROR)
+  if (az_open_handle(name, strlen(name), &dir_h, 0) != NO_ERROR)
   {
     return 0;
   }
@@ -23,21 +23,21 @@ DIR *opendir(const char *name)
     return 0;
   }
 
-  if (syscall_get_object_properties(dir_h, NULL, 0, &props) != NO_ERROR)
+  if (az_get_object_properties(dir_h, NULL, 0, &props) != NO_ERROR)
   {
-    syscall_close_handle(dir_h);
+    az_close_handle(dir_h);
     return 0;
   }
 
   if (!props.exists || props.is_leaf)
   {
-    syscall_close_handle(dir_h);
+    az_close_handle(dir_h);
     return 0;
   }
 
   if (!(dir = calloc(1, sizeof *dir)))
   {
-    syscall_close_handle(dir_h);
+    az_close_handle(dir_h);
     return 0;
   }
 

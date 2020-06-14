@@ -9,7 +9,7 @@ ssize_t read(int fd, void *buf, size_t count)
 	uint64_t br = 0;
 	ERR_CODE ec;
 
-	ec = syscall_read_handle(fd,
+	ec = az_read_handle(fd,
 													 0,
 													 count,
 													 buf,

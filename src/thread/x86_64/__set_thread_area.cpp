@@ -16,7 +16,7 @@ int __set_thread_area(void *ptr)
 {
   int ret = -1;
 
-  ERR_CODE r = syscall_thread_set_tls_base(TLS_REGISTERS::FS, reinterpret_cast<unsigned long>(ptr));
+  ERR_CODE r = az_thread_set_tls_base(TLS_REGISTERS::FS, reinterpret_cast<unsigned long>(ptr));
 
   if (r == ERR_CODE::NO_ERROR)
   {

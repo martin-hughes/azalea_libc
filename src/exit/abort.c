@@ -7,6 +7,6 @@
 _Noreturn void abort(void)
 {
 	a_crash();
-	syscall_exit_process(~0);
-	while (1) { syscall_exit_process(~0); };
+	az_exit_process(~0);
+	while (1) { az_exit_process(~0); };
 }

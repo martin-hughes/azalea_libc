@@ -55,7 +55,7 @@ static inline void unlock_requeue(volatile int *l, volatile int *r, int w)
 {
 	a_store(l, 0);
 	if (w) __wake(l, 1, 1);
-	else syscall_futex_op(l, FUTEX_REQUEUE, 0, 0, r, 1);
+	else az_futex_op(l, FUTEX_REQUEUE, 0, 0, r, 1);
 }
 
 enum {

@@ -12,8 +12,8 @@ static char shared_stack[256];
 static void do_unmap()
 {
 	/*__syscall(SYS_munmap, unmap_base, unmap_size);*/
-	syscall_unmap_memory(); /* This is a placeholder for a more complete kernel. */
-	syscall_exit_thread();
+	az_unmap_memory(); /* This is a placeholder for a more complete kernel. */
+	az_exit_thread();
 }
 
 void __unmapself(void *base, size_t size)

@@ -30,7 +30,7 @@ int fstat(int fd, struct stat *st)
 	st->st_blksize = 0;
 	st->st_blocks = 0;
 
-	ec = syscall_get_object_properties(fd, NULL, 0, &props);
+	ec = az_get_object_properties(fd, NULL, 0, &props);
 	if (ec == NOT_FOUND)
 	{
 		errno = ENOENT;
@@ -42,7 +42,7 @@ int fstat(int fd, struct stat *st)
 		rv = -1;
 	}
 
-	ec = syscall_get_handle_data_len(fd, &size);
+	ec = az_get_handle_data_len(fd, &size);
 	if (ec == NO_ERROR)
 	{
 		/* printf("Got file size: %ll\n", size); */

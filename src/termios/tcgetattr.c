@@ -24,7 +24,7 @@ int tcgetattr(int fd, struct termios *tio)
 	output_opts.output_buffer = (char *)(&azalea_tco);
 	output_opts.output_buffer_len = sizeof(azalea_tco);
 
-	if (syscall_send_message(fd, SM_GET_OPTIONS, 0, NULL, &output_opts) != NO_ERROR)
+	if (az_send_message(fd, SM_GET_OPTIONS, 0, NULL, &output_opts) != NO_ERROR)
 	{
 		errno = EFAULT;
 		return -1;

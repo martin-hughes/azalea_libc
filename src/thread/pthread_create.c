@@ -95,7 +95,7 @@ _Noreturn void __pthread_exit(void *result)
 	release_tid(self->tid);
 	self->tid = 0;
 
-	for (;;) syscall_exit_thread();
+	for (;;) az_exit_thread();
 }
 
 void __do_cleanup_push(struct __ptcb *cb)
@@ -273,14 +273,14 @@ int __pthread_create(pthread_t *restrict res, const pthread_attr_t *restrict att
 
 	a_inc(&libc.threads_minus_1);
 
-	ec = syscall_create_thread((c11 ? start_c11 : start), &new_thread, (unsigned long long)new, stack);
+	ec = az_create_thread((c11 ? start_c11 : start), &new_thread, (unsigned long long)new, stack);
 	if ((ec != NO_ERROR) || (new_thread == 0))
 	{
 		ret = -EINVAL;
 	}
 	else
 	{
-		syscall_start_thread(new_thread);
+		az_start_thread(new_thread);
 		ret = 0;
 	}
 

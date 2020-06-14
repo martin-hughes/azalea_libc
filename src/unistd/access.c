@@ -14,7 +14,7 @@ int access(const char *filename, int amode)
 	uint64_t size;
 	GEN_HANDLE h;
 
-	ec = syscall_get_object_properties(0, filename, strlen(filename), &props);
+	ec = az_get_object_properties(0, filename, strlen(filename), &props);
 	if (ec == NOT_FOUND)
 	{
 		errno = ENOENT;

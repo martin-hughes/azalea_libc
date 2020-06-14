@@ -7,7 +7,7 @@
 
 int closedir(DIR *dir)
 {
-	syscall_close_handle(dir->dir_handle);
+	az_close_handle(dir->dir_handle);
 	free(dir);
 	return 0;
 }
