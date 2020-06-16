@@ -22,6 +22,11 @@
 
 #include <stdint.h>
 
+#if defined(__clang__) || defined(__llvm__) || defined (__GNUC__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wbitwise-op-parentheses"
+#pragma clang diagnostic ignored "-Wshift-op-parentheses"
+#endif
 static __inline uint16_t __bswap16(uint16_t __x)
 {
 	return __x<<8 | __x>>8;
@@ -36,6 +41,9 @@ static __inline uint64_t __bswap64(uint64_t __x)
 {
 	return __bswap32(__x)+0ULL<<32 | __bswap32(__x>>32);
 }
+#if defined(__clang__) || defined(__llvm__) || defined (__GNUC__)
+#pragma clang diagnostic pop
+#endif
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define htobe16(x) __bswap16(x)
